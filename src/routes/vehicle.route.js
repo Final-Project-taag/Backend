@@ -1,7 +1,7 @@
-/* import {Router} from "express"
+import {Router} from "express"
 import jwt from 'jsonwebtoken';
 
-import Car from "../model/vehicle.route";
+import Car from "../model/vehicle.model";
 
 
 
@@ -43,4 +43,3 @@ protectedRouter.route('/vehicles')
     }
   })
 
- */
