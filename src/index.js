@@ -2,8 +2,9 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { connectToDb } from './service/db.service.js';
-
-
+import authRouter from './routes/auth.route.js';
+/* import protectedRouter from './routes/vehicle.route.js';
+ */
 
 
 // Lade Umgebungsvariablen (engl. enviroment variables) aus der .env Datei
@@ -22,10 +23,10 @@ app.use(cors({
 }));
 
 // --------------------- ROUTES -------------------------
-/* app.use('/auth', authRouter);
+app.use('/auth', authRouter);
 
-app.use('/protected', protectedRouter); */
-
+/* app.use('/protected', protectedRouter); 
+ */
 
 
 // Einmalig Verbindung ueber default Connection aufbauen
