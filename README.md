@@ -1,6 +1,6 @@
 # Backend
 
-Natürlich, ich kann Ihnen Vorschläge für die Routen in Ihrem Full-Stack-Abschlussprojekt geben. In diesem Fall verwenden Sie Express.js für das Backend und React Vite mit Tailwind für das Frontend. Hier sind einige grundlegende Routen, die Sie für das Reservierungs- und Buchungssystem für e-Roller, e-Fahrräder und E-Autos erstellen können:
+Reservierungs- und Buchungssystem für e-Roller, e-Fahrräder und E-Autos erstellen können:
 
     Benutzer-Authentifizierung und -Verwaltung:
         POST /api/auth/register: Benutzerregistrierung
@@ -38,5 +38,3 @@ Natürlich, ich kann Ihnen Vorschläge für die Routen in Ihrem Full-Stack-Absch
         POST /api/locations: Neuen Standort hinzufügen (nur für Admins)
         PUT /api/locations/:id: Standortinformationen aktualisieren (nur für Admins)
         DELETE /api/locations/:id: Standort löschen (nur für Admins)
-
-Diese Routen bieten eine solide Grundlage für Ihr Abschlussprojekt. Sie können sie natürlich je nach Bedarf und Anforderungen weiter anpassen und erweitern.
