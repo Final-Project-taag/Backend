@@ -3,9 +3,8 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { connectToDb } from './service/db.service.js';
 import authRouter from './routes/auth.route.js';
-/* import protectedRouter from './routes/vehicle.route.js';
- */
-
+import vehicleRouter from './routes/vehicle.route.js';
+import reservationsRouter from './routes/reservations.route.js';
 
 // Lade Umgebungsvariablen (engl. enviroment variables) aus der .env Datei
 dotenv.config();
@@ -25,9 +24,8 @@ app.use(cors({
 // --------------------- ROUTES -------------------------
 app.use('/auth', authRouter);
 
-/* app.use('/protected', protectedRouter); 
- */
-
+app.use('/vehicles', vehicleRouter);
+app.use('/reservation', reservationsRouter);
 
 // Einmalig Verbindung ueber default Connection aufbauen
 // es kann noch ein Callback mitgeliefert werden
@@ -38,3 +36,7 @@ await connectToDb();
 app.listen(process.env.API_PORT, () => {
     console.log(`Server is listening on http://localhost:${process.env.API_PORT}`);
 });
+
+
+
+
