@@ -5,7 +5,7 @@ import { connectToDb } from './service/db.service.js';
 import authRouter from './routes/auth.route.js';
 import vehicleRouter from './routes/vehicle.route.js';
 import reservationsRouter from './routes/reservations.route.js';
-
+import bookingRouter from './routes/booking.route.js';
 // Lade Umgebungsvariablen (engl. enviroment variables) aus der .env Datei
 dotenv.config();
 
@@ -26,6 +26,8 @@ app.use('/auth', authRouter);
 
 app.use('/vehicles', vehicleRouter);
 app.use('/reservation', reservationsRouter);
+app.use('/booking', bookingRouter);
+
 
 // Einmalig Verbindung ueber default Connection aufbauen
 // es kann noch ein Callback mitgeliefert werden

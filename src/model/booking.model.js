@@ -14,12 +14,12 @@ const bookingSchema = new Schema({
     required: true,
   },// ein Array von Referenzen auf die E-Mobility-Geräte, die der Benutzer bucht
   vehicle: [{
-    type: mongoose.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'Vehicle',
     required: true,
   }],
   user:{
-    type: mongoose.types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
   }
 });
