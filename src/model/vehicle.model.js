@@ -1,5 +1,7 @@
 import mongoose from 'mongoose';
 
+
+
 const Schema = mongoose.Schema;
 
 const vehicleSchema = new Schema({
@@ -24,12 +26,22 @@ const vehicleSchema = new Schema({
     type: Number,
     required: true,
   },
- 
+  imageUrls: [{
+    type: String,
+  }],
+
+
   chargingTime: {
     type: Number,
     required: true,
   },
+  anZahl:{
+    type: Number,
+    required: true,
+  },
 });
+
+
 
 const Vehicle = mongoose.model('Vehicle', vehicleSchema);
 

@@ -1,27 +1,28 @@
 import { Router } from "express";
-import jwt from "jsonwebtoken";
 import Reservation from "../model/reservation.model.js";
+import Vehicle from "../model/vehicle.model.js";
+import jwt from 'jsonwebtoken';
 
+// Middleware zum Verifizieren von Token
 function verifyToken(req, res, next) {
-    if (!req.headers.authorization)
-      return res.status(401).send({ success: false, message: "Token missing" });
-  
-    let token = req.headers.authorization.split(" ")[1];
-  
-    jwt.verify(token, process.env.JWT_SECRET, (err, payload) => {
-      if (err)
-        return res.status(401).send({ success: false, message: "Invalid token" });
-  
-      req.tokenPayload = payload;
-      next();
-    });
-  }
-  
+  if (!req.headers.authorization)
+    return res.status(401).send({ success: false, message: "Token missing" });
 
-  const router = Router();
+  let token = req.headers.authorization.split(" ")[1];
 
-// alle Reservierungen 
-router.get("/", verifyToken, async (req, res) => {
+  // Verifiziere extrahierten Token mittels Signaturpruefung
+  jwt.verify(token, process.env.JWT_SECRET, (err, payload) => {
+    if (err)
+      return res.status(401).send({ success: false, message: "Invalid token" });
+
+    req.tokenPayload = payload;
+    next();
+  });
+}
+const reservationsRouter = Router();
+
+// Get all reservations
+reservationsRouter.get("/", verifyToken, async (req, res) => {
   try {
     const userId = req.tokenPayload.userId;
     const reservations = await Reservation.find({ user: userId });
@@ -31,8 +32,9 @@ router.get("/", verifyToken, async (req, res) => {
   }
 });
 
-router.post("/", verifyToken, async (req, res) => {
-  const { vehicleId, startDate, endDate } = req.body;
+// Create a reservation
+reservationsRouter.post("/", verifyToken, async (req, res) => {
+  const { vehicleId, startDate, endDate, createdAt, reserved, reservedUntil } = req.body;
   const userId = req.tokenPayload.userId;
 
   const reservation = new Reservation({
@@ -40,17 +42,27 @@ router.post("/", verifyToken, async (req, res) => {
     user: userId,
     startDate,
     endDate,
+    createdAt,
+    reserved, 
+    reservedUntil
   });
 
   try {
     const newReservation = await reservation.save();
+
+    await Vehicle.findByIdAndUpdate(vehicleId, {
+      reserved: true,
+      reservedUntil: new Date(Date.now() + 72 * 60 * 60 * 1000),
+    });
+
     res.status(201).json(newReservation);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 });
 
-router.get("/:id", verifyToken, async (req, res) => {
+// Get a specific reservation
+reservationsRouter.get("/:id", verifyToken, async (req, res) => {
   try {
     const reservation = await Reservation.findById(req.params.id);
 
@@ -66,7 +78,8 @@ router.get("/:id", verifyToken, async (req, res) => {
   }
 });
 
-router.put("/:id", verifyToken, async (req, res) => {
+// Update a reservation
+reservationsRouter.put("/:id", verifyToken, async (req, res) => {
   const { startDate, endDate } = req.body;
 
   try {
@@ -91,7 +104,8 @@ router.put("/:id", verifyToken, async (req, res) => {
   }
 });
 
-router.delete("/:id", verifyToken, async (req, res) => {
+// Delete a reservation
+reservationsRouter.delete("/:id", verifyToken, async (req, res) => {
   try {
     const deletedReservation = await Reservation.findByIdAndDelete(req.params.id);
 
@@ -107,4 +121,4 @@ router.delete("/:id", verifyToken, async (req, res) => {
   }
 });
 
-export default router;
+export default reservationsRouter;
