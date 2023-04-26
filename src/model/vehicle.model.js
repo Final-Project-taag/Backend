@@ -1,32 +1,48 @@
-
-
-
 import mongoose from 'mongoose';
 
 
-const vehicleSchema = mongoose.Schema({
-  make: {type: String,required: true},
-  model: {type: String,required: true,},
-  year: {type: Number,required: true,},
-  color: {
+
+const Schema = mongoose.Schema;
+
+const vehicleSchema = new Schema({
+  type: {
     type: String,
+    enum: ['scooter', 'bike', 'car'],
+    required: true,
+  },
+  name: {
+    type: String,
+    required: true,
+  },
+  driveRange: {
+    type: Number,
+    required: true,
+  },
+  weight: {
+    type: Number,
     required: true,
   },
   price: {
     type: Number,
     required: true,
   },
-  available: {
-    type: Boolean,
-    default: true,
+  imageUrls: [{
+    type: String,
+  }],
+
+
+  chargingTime: {
+    type: Number,
+    required: true,
   },
-  rentedBy: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
-    default: null,
+  anZahl:{
+    type: Number,
+    required: true,
   },
 });
 
+
+
 const Vehicle = mongoose.model('Vehicle', vehicleSchema);
 
-export default vehicleSchema;
+export default Vehicle;
