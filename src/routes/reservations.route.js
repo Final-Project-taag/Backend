@@ -32,16 +32,21 @@ reservationsRouter.get("/", verifyToken, async (req, res) => {
   }
 });
 
-// Create a reservation
 reservationsRouter.post("/", verifyToken, async (req, res) => {
-  const { vehicleId, startDate, endDate, createdAt, reserved, reservedUntil } = req.body;
+  const { vehicleId, startDate,  createdAt, reserved } = req.body;
   const userId = req.tokenPayload.userId;
+
+  // Set the reservation duration to 60 minutes (in milliseconds)
+  const reservationDuration = 60 * 60 * 1000;
+
+  // Calculate the reservedUntil date
+  const reservedUntil = new Date(Date.now() + reservationDuration);
 
   const reservation = new Reservation({
     vehicle: vehicleId,
     user: userId,
     startDate,
-    endDate,
+    
     createdAt,
     reserved, 
     reservedUntil
@@ -52,7 +57,7 @@ reservationsRouter.post("/", verifyToken, async (req, res) => {
 
     await Vehicle.findByIdAndUpdate(vehicleId, {
       reserved: true,
-      reservedUntil: new Date(Date.now() + 72 * 60 * 60 * 1000),
+      reservedUntil: reservedUntil,
     });
 
     res.status(201).json(newReservation);

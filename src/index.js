@@ -7,8 +7,9 @@ import vehicleRouter from './routes/vehicle.route.js';
 import reservationsRouter from './routes/reservations.route.js';
 import bookingRouter from './routes/booking.route.js';
 import { startBackgroundTasks } from './backgroundtasks/ backgroundTasks.js';
-
-//------------------------------------------------------------------------------------
+/* import { addVehicles } from './controllers/vehicleController';
+ */
+import {showAvailableVehicleCounts} from './controller/vehicle.add.js'
 //-------------------------------------------------------------------------------------
 dotenv.config();
 
@@ -36,14 +37,36 @@ app.use(cors(corsOptions));
 // --------------------- ROUTES -------------------------
 app.use('/auth', authRouter);
 app.use('/vehicles', vehicleRouter);
-
 app.use('/reservations', reservationsRouter);
 app.use('/booking', bookingRouter);
+
+//die Fahrzeugtypen und die verfügbare Menge jedes Fahrzeugs zurückzugeben:
+app.get('/api/vehicleCounts', async (req, res) => {
+  const vehicleCounts = await showAvailableVehicleCounts();
+  const vehicleCountsMap = vehicleCounts.reduce((acc, count) => {
+    acc[count._id] = count.count;
+    return acc;
+  }, {});
+  res.json(vehicleCountsMap);
+});
 
 await connectToDb();
 // Start background tasks
 startBackgroundTasks();
+// -----------------------------Vehicle hinzufügen---------------
+/* const vehicleData = {
+  type: 'car',
+  name: 'Tesla Model S',
+  driveRange: 400,
+  weight: 2000,
+  price: 80000,
+  imageUrls: ['https://example.com/tesla-model-s.jpg'],
+  chargingTime: 8,
+};
 
+const numberOfVehiclesToAdd = 5;
+
+addVehicles(vehicleData, numberOfVehiclesToAdd); */
 // ----------------------------------------------------------
 
 app.listen(process.env.API_PORT, () => {
