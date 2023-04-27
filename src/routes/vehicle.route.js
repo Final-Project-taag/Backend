@@ -49,7 +49,7 @@ vehicleRouter.get("/:id", async (req, res) => {
 
 // Route zum Hinzufügen eines Fahrzeugs
 vehicleRouter.post('/', verifyToken, isAdmin, async (req, res) => {
-  const { type, name, driveRange, weight, price, chargingTime, anZahl } = req.body;
+  const { type, name, driveRange, weight, price, chargingTime,  reserved , reservedUntil } = req.body;
 
   const vehicle = new Vehicle({
     type,
@@ -58,7 +58,8 @@ vehicleRouter.post('/', verifyToken, isAdmin, async (req, res) => {
     weight,
     price,
     chargingTime,
-    anZahl
+    reserved , 
+    reservedUntil
   });
 
   try {
@@ -75,7 +76,7 @@ vehicleRouter.post('/', verifyToken, isAdmin, async (req, res) => {
 
 // Route zum Updaten
 vehicleRouter.put("/:id", verifyToken, isAdmin, async (req, res) => {
-  const { type, name, driveRange, weight, price, chargingTime, anzahl } = req.body;
+  const { type, name, driveRange, weight, price, chargingTime, reserved , reservedUntil } = req.body;
   
   try {
   const updatedVehicle = await Vehicle.findByIdAndUpdate(
@@ -87,7 +88,8 @@ vehicleRouter.put("/:id", verifyToken, isAdmin, async (req, res) => {
   weight,
   price,
   chargingTime,
-  anZahl
+  reserved,
+  reservedUntil
   },
   { new: true }
   );
@@ -156,5 +158,7 @@ vehicleRouter.get('/filter', async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
+
 
 export default vehicleRouter

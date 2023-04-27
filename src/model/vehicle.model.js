@@ -35,10 +35,19 @@ const vehicleSchema = new Schema({
     type: Number,
     required: true,
   },
-  anZahl:{
+  quantity: {
     type: Number,
     required: true,
   },
+  reserved: {
+    type: Boolean,
+    default: false,
+  },
+  reservedUntil: {
+    type: Date,
+  }
+
+
 });
 
 
