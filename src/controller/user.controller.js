@@ -1,10 +1,10 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken"
-
 import * as UserModel from "../model/user.model.js";
 
 
-export async function registerNewUser(req, res) {
+  
+ export async function registerNewUser(req, res) {
     
 
     try {
@@ -27,9 +27,13 @@ export async function registerNewUser(req, res) {
         });
     }
 } 
+ 
+
+
+
 
 // Controller Funktion zum Einloggen bestehender User
-export async function login(req, res) {
+ export async function login(req, res) {
     // extrahiere Properties aus dem body
     let { username, password } = req.body;
 
@@ -74,3 +78,4 @@ export async function login(req, res) {
         });
     }
 }
+ 

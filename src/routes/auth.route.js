@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { registerNewUser, login} from "../controller/user.controller.js";
+import { registerNewUser, login, } from "../controller/user.controller.js";
 
 // Erstelle neue Router Instanz
 const authRouter = Router();

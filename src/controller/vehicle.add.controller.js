@@ -22,25 +22,25 @@ export const addVehicles = async (vehicleData, count) => {
   }
 };
 /* 
-  // Beispiel-Daten für ein Fahrzeug
+    // Beispiel-Daten für ein Fahrzeug
    const vehicleData = {
-    type: 'scooter',
-    name: 'SuperScooter 3000',
-    driveRange: 30,
-    weight: 12,
-    price: 20,
-    imageUrls: ['/SuperScooter 3000.jpg'],
-    chargingTime: 4,
-    quantity: 2
+    type: 'car',
+    name: 'Tesla Model 3',
+    driveRange: 350,
+    weight: 1610,
+    price: 250,
+    imageUrls: ['public/images/Tesla-Model-3.webp'],
+    chargingTime: 8,
+    quantity: 5,
     
   };
   
-  const numberOfVehiclesToAdd = 5; // Die Anzahl der Fahrzeuge, die Sie hinzufügen möchten
+  const numberOfVehiclesToAdd = 1; // Die Anzahl der Fahrzeuge, die Sie hinzufügen möchten
   
   addVehicles(vehicleData, numberOfVehiclesToAdd); // Führen Sie die Funktion aus, um die Fahrzeuge hinzuzufügen
-  
-    */
-
+   
+        
+ */
 //-------------------------------------------------ANZAHL DER FAHRUZEUGEN ------------------------------------------
 // In diesem Beispiel wird eine Funktion showAvailableVehicleCounts erstellt, die die aggregate() Funktion verwendet, 
 // um die Fahrzeuge nach Typ zu gruppieren und die Anzahl der Fahrzeuge in jeder Gruppe zu zählen. 
@@ -48,21 +48,22 @@ export const addVehicles = async (vehicleData, count) => {
 // geändert nach Modellnamen 
 // Fahrzeuge nach Modellnamen zu gruppieren und die Gesamtmenge für jedes Modell zu berechnen:
 export const showAvailableVehicleCounts = async () => {
-    try {
-      return await Vehicle.aggregate([
-        {
-          $group: {
-            _id: '$name', // Gruppieren Sie Fahrzeuge nach Modellnamen
-            count: { $sum: '$quantity' }, // Berechnen Sie die Gesamtmenge für jedes Modell
-          },
+  try {
+    const vehicleCounts = await Vehicle.aggregate([
+      {
+        $group: {
+          _id: '$name', // Gruppieren Sie Fahrzeuge nach Modellnamen
+          count: { $sum: '$quantity' }, // Berechnen Sie die Gesamtmenge für jedes Modell
         },
-      ]);
-    } catch (err) {
-      console.error('Fehler beim Abrufen der verfügbaren Fahrzeugmengen:', err);
-    }
-  };
-  
-  
+      },
+    ]);
+    console.log("Fahrzeuganzahlen:", vehicleCounts); // Debugging-Information hinzufügen
+    return vehicleCounts;
+  } catch (err) {
+    console.error('Fehler beim Abrufen der verfügbaren Fahrzeugmengen:', err);
+  }
+};
+
   showAvailableVehicleCounts(); // Führen Sie die Funktion aus, um die verfügbaren Fahrzeugmengen anzuzeigen
   
   

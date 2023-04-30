@@ -33,6 +33,36 @@ reservationsRouter.get("/", verifyToken, async (req, res) => {
 });
 
 reservationsRouter.post("/", verifyToken, async (req, res) => {
+  const { vehicleId } = req.body;
+  const userId = req.tokenPayload.userId;
+
+  // Set the reservation duration to 60 minutes (in milliseconds)
+  const reservationDuration = 60 * 60 * 1000;
+
+  // Calculate the reservedUntil date
+  const reservedUntil = new Date(Date.now() + reservationDuration);
+
+  const reservation = new Reservation({
+    vehicle: vehicleId,
+    user: userId,
+    startDate: new Date(),
+    reserved: true,
+    reservedUntil,
+  });
+
+  try {
+    const newReservation = await reservation.save();
+
+    await Vehicle.updateQuantity(vehicleId, 1);
+
+    res.status(201).json(newReservation);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+});
+
+
+/* reservationsRouter.post("/", verifyToken, async (req, res) => {
   const { vehicleId, startDate,  createdAt, reserved } = req.body;
   const userId = req.tokenPayload.userId;
 
@@ -65,7 +95,7 @@ reservationsRouter.post("/", verifyToken, async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 });
-
+ */
 // Get a specific reservation
 reservationsRouter.get("/:id", verifyToken, async (req, res) => {
   try {
@@ -110,7 +140,31 @@ reservationsRouter.put("/:id", verifyToken, async (req, res) => {
 });
 
 // Delete a reservation
+
+// Delete a reservation
 reservationsRouter.delete("/:id", verifyToken, async (req, res) => {
+  try {
+    const deletedReservation = await Reservation.findByIdAndDelete(req.params.id);
+
+    if (!deletedReservation) {
+      return res
+        .status(404)
+        .json({ message: "Reservation not found with the given ID" });
+    }
+
+    // Increase the quantity by 1 for the vehicle associated with the deleted reservation
+    const vehicle = await Vehicle.findById(deletedReservation.vehicle);
+    vehicle.quantity += 1;
+    await vehicle.save();
+console.log(vehicle);
+    res.json({ message: "Reservation successfully deleted", reservation: deletedReservation });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+
+/* reservationsRouter.delete("/:id", verifyToken, async (req, res) => {
   try {
     const deletedReservation = await Reservation.findByIdAndDelete(req.params.id);
 
@@ -124,6 +178,6 @@ reservationsRouter.delete("/:id", verifyToken, async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-});
+}); */
 
 export default reservationsRouter;
