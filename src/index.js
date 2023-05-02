@@ -18,6 +18,8 @@ dotenv.config();
 // Initialisiere express
 const app = express();
 
+
+
 const corsWhitelist = process.env.CORS_WHITELIST.split(",");
 
 // Middleware fuer das body-Parsing
@@ -41,7 +43,8 @@ app.use('/auth', authRouter);
 app.use('/vehicles', vehicleRouter);
 app.use('/reservations', reservationsRouter);
 app.use('/booking', bookingRouter);
-
+/* app.use('/payment', paymentRouter);
+ */
 //die Fahrzeugtypen und die verfügbare Menge jedes Fahrzeugs zurückzugeben:
 app.get('/api/vehicleCounts', async (req, res) => {
   const vehicleCounts = await showAvailableVehicleCounts();
