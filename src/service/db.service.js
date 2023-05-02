@@ -6,7 +6,9 @@ export async function connectToDb(callback) {
         // Setze den 'strict' Mode fuer mongoose (Felder, die nicht im Schema enthalten sind, werden nicht mitgespeichert)
         mongoose.set('strictQuery', true);
 
-        await mongoose.connect(`mongodb://${process.env.DB_HOST}/${process.env.DB_NAME}`, {
+        await mongoose.connect(process.env.MONGODB_URI, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
             maxPoolSize: 10
         });
 
@@ -17,8 +19,7 @@ export async function connectToDb(callback) {
             callback();
         }
 
-        console.log('Connection to DB established');
-
+        console.log('Verbindung zu MongoDB Atlas hergestellt');
     } catch (error) {
         console.error(error);
     }
