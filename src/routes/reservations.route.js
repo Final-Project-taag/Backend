@@ -25,7 +25,7 @@ const reservationsRouter = Router();
 reservationsRouter.get("/", verifyToken, async (req, res) => {
   try {
     const userId = req.tokenPayload.userId;
-    const reservations = await Reservation.find({ user: userId });
+    const reservations = await Reservation.find({ user: userId }).populate("vehicle");
     res.json(reservations);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -76,40 +76,6 @@ reservationsRouter.post("/", verifyToken, async (req, res) => {
 // abhängig von der Art des aufgetretenen Fehlers. Außerdem wird bei der Fehlerbehandlung der Name des Fehlers geprüft, um festzustellen, ob es sich um einen Validierungsfehler handelt. 
 // In diesem Fall wird eine detaillierte Fehlermeldung zurückgegeben, die Informationen über die ungültigen Eingabedaten enthält.
 
-/* reservationsRouter.post("/", verifyToken, async (req, res) => {
-  const { vehicleId, startDate,  createdAt, reserved } = req.body;
-  const userId = req.tokenPayload.userId;
-
-  // Set the reservation duration to 60 minutes (in milliseconds)
-  const reservationDuration = 60 * 60 * 1000;
-
-  // Calculate the reservedUntil date
-  const reservedUntil = new Date(Date.now() + reservationDuration);
-
-  const reservation = new Reservation({
-    vehicle: vehicleId,
-    user: userId,
-    startDate,
-    
-    createdAt,
-    reserved, 
-    reservedUntil
-  });
-
-  try {
-    const newReservation = await reservation.save();
-
-    await Vehicle.findByIdAndUpdate(vehicleId, {
-      reserved: true,
-      reservedUntil: reservedUntil,
-    });
-
-    res.status(201).json(newReservation);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-});
- */
 // Get a specific reservation
 reservationsRouter.get("/:id", verifyToken, async (req, res) => {
   try {

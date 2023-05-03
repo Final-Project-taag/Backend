@@ -29,7 +29,7 @@ vehicleRouter.get('/', async (req, res) => {
   
 
 //Diese Route verwendet die findById-Methode, um ein Fahrzeug anhand der angegebenen ID zu suchen.
-vehicleRouter.get("/:id", async (req, res) => {
+vehicleRouter.get("/:vehicleId", async (req, res) => {
   try {
     const vehicle = await Vehicle.findById(req.params.id);
 
