@@ -1,4 +1,4 @@
-/* 
+
 import Reservation from "../model/reservation.model.js";
 
 export const newReservation = await Reservation.create({
@@ -10,4 +10,4 @@ export const newReservation = await Reservation.create({
   });
   
   await Vehicle.updateQuantity(vehicleId, 1);
-   */
+   

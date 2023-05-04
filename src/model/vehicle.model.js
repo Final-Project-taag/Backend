@@ -14,6 +14,7 @@ const vehicleSchema = new Schema({
     type: String,
     required: true,
   },
+
   driveRange: {
     type: Number,
     required: true,

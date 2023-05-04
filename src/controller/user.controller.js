@@ -78,4 +78,10 @@ import * as UserModel from "../model/user.model.js";
         });
     }
 }
+export default function loadUser(req,res) {
+    
+    res.send(req.tokenPayload)
+
+    
+}
  
