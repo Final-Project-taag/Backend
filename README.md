@@ -1,6 +1,7 @@
 # Backend
 
-Reservierungs- und Buchungssystem für e-Roller, e-Fahrräder und E-Autos erstellen können:
+Reservierungs- und Buchungssystem 
+für e-Roller, e-Fahrräder und E-Autos:
 
     Benutzer-Authentifizierung und -Verwaltung:
         POST /api/auth/register: Benutzerregistrierung
@@ -38,3 +39,21 @@ Reservierungs- und Buchungssystem für e-Roller, e-Fahrräder und E-Autos erstel
         POST /api/locations: Neuen Standort hinzufügen (nur für Admins)
         PUT /api/locations/:id: Standortinformationen aktualisieren (nur für Admins)
         DELETE /api/locations/:id: Standort löschen (nur für Admins)
+
+Infos Zur Mollie:
+
+const payment = await mollieClient.payments.get('tr_8WhJKGmgBy');
+// Check payment.status.
+
+// Retrieve the first 15 payments.
+const payments = mollieClient.payments.page({ limit: 15 });
+// payments.nextPageCursor is the cursor: the ID of the first payment on the next page.
+
+// Retrieve the second 15 payments (using the cursor from the previous page).
+const payments = mollieClient.payments.page({ limit: 15, from: 'tr_8WhJKGmgBy' });
+
+// Iterate over all payments.
+for await (let payment in mollieClient.payments.iterate()) {
+    // (Use break to end the loop prematurely.)
+  }
+

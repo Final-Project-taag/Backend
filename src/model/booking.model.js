@@ -21,6 +21,10 @@ const bookingSchema = new Schema({
   user:{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
+  },
+  totalPrice: {
+    type: Number,
+    required: true,
   }
 });
 
