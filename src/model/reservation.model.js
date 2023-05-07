@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
 
+
 const reservationSchema = new mongoose.Schema({
+
   vehicle: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Vehicle",
@@ -13,6 +15,7 @@ const reservationSchema = new mongoose.Schema({
   },
   startDate: {
     type: Date,
+<<<<<<< HEAD
     required: true,
   },
   endDate: {
@@ -23,7 +26,11 @@ const reservationSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now,
+=======
+    required: Date.now,
+>>>>>>> gaby
   },
+  
   reserved: {
     type: Boolean,
     default: false,

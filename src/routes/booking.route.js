@@ -1,6 +1,6 @@
 import { Router } from "express";
 import Booking from "../model/booking.model.js";
-import verifyToken from "../middleware/verifyToken.js"
+import verifyToken from "../middleware/verifyToken.js";
 
 /* import mollieClient from '../mollieClient';
  */
@@ -26,6 +26,7 @@ router.post("/", verifyToken, async (req, res) => {
   });
 
   try {
+  
     const newBooking = await booking.save();
     res.status(201).json(newBooking);
   } catch (error) {
