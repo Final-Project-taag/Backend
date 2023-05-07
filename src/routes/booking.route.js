@@ -2,7 +2,10 @@ import { Router } from "express";
 import Booking from "../model/booking.model.js";
 import verifyToken from "../middleware/verifyToken.js"
 
+/* import mollieClient from '../mollieClient';
+ */
 const router = Router();
+
 
 // Route zum Abrufen aller Buchungen für den aktuellen Benutzer
 router.get("/", verifyToken, async (req, res) => {

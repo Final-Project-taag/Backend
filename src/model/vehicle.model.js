@@ -35,13 +35,30 @@ const vehicleSchema = new Schema({
     type: Number,
     required: true,
   },
-  anZahl:{
+  quantity: {
     type: Number,
     required: true,
   },
+  reserved: {
+    type: Boolean,
+    default: false,
+  },
+  reservedUntil: {
+    type: Date,
+  },
+  updateQuantity: {
+    type: Number
+  }
+
 });
 
 
+vehicleSchema.statics.updateQuantity = async function (vehicleId, quantity) {
+  const vehicle = await this.findById(vehicleId);
+  vehicle.quantity -= quantity;
+  await vehicle.save();
+  return vehicle;
+};
 
 const Vehicle = mongoose.model('Vehicle', vehicleSchema);
 
