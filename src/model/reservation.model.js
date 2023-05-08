@@ -18,13 +18,16 @@ const reservationSchema = new mongoose.Schema({
     required: Date.now,
   },
   
+
   reserved: {
     type: Boolean,
     default: false,
   },
   reservedUntil: {
     type: Date,
-  }
+  },
+  
+
 });
 
 const Reservation = mongoose.model("Reservation", reservationSchema);

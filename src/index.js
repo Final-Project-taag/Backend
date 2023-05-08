@@ -9,6 +9,8 @@ import bookingRouter from './routes/booking.route.js';
 import { startBackgroundTasks } from './backgroundtasks/ backgroundTasks.js';
 import paymentRouter from "./routes/payment.route.js";
 import vehicleCountsRouter from './routes/vehicleCounts.route.js';
+import paymentSuccessRouter from './routes/payment-success.route.js';
+import paymentWebhookRouter from './routes/paymentWebhook.route.js';
 //-------------------------------------------------------------------------------------
 dotenv.config();
 
@@ -42,17 +44,9 @@ app.use('/reservations', reservationsRouter);
 app.use('/booking', bookingRouter);
 app.use('/payment', paymentRouter);
 app.use('/api/vehicleCounts', vehicleCountsRouter);
+app.use('/payment/payment-update', paymentSuccessRouter);
+app.use('/payment/webhook', paymentWebhookRouter);
 
-//die Fahrzeugtypen und die verfügbare Menge jedes Fahrzeugs zurückzugeben:
-/* app.get('/api/vehicleCounts', async (req, res) => {
-  const vehicleCounts = await showAvailableVehicleCounts();
-  const vehicleCountsMap = vehicleCounts.reduce((acc, count) => {
-    acc[count._id] = count.count;
-    return acc;
-  }, {});
-  res.json(vehicleCountsMap);
-});
- */
 await connectToDb();
 // Start background tasks
 startBackgroundTasks();

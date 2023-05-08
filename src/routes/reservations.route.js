@@ -2,23 +2,8 @@ import { Router } from "express";
 import Reservation from "../model/reservation.model.js";
 import Vehicle from "../model/vehicle.model.js";
 import jwt from 'jsonwebtoken';
+import verifyToken from "../middleware/verifyToken.js";
 
-// Middleware zum Verifizieren von Token
-function verifyToken(req, res, next) {
-  if (!req.headers.authorization)
-    return res.status(401).send({ success: false, message: "Token missing" });
-
-  let token = req.headers.authorization.split(" ")[1];
-
-  // Verifiziere extrahierten Token mittels Signaturpruefung
-  jwt.verify(token, process.env.JWT_SECRET, (err, payload) => {
-    if (err)
-      return res.status(401).send({ success: false, message: "Invalid token" });
-
-    req.tokenPayload = payload;
-    next();
-  });
-}
 const reservationsRouter = Router();
 
 // Get all reservations
@@ -31,6 +16,7 @@ reservationsRouter.get("/", verifyToken, async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+// Reservierungsanfrage schicken
 
 reservationsRouter.post("/", verifyToken, async (req, res) => {
   const { vehicleId } = req.body;
@@ -46,13 +32,16 @@ reservationsRouter.post("/", verifyToken, async (req, res) => {
     vehicle: vehicleId,
     user: userId,
     startDate: new Date(),
+  
     reserved: true,
     reservedUntil,
+    
   });
 
   try {
     const newReservation = await reservation.save();
-
+    
+   
     if (!newReservation) {
       return res.status(500).json({ message: "Fehler beim Speichern der Reservierung." });
     }
@@ -72,6 +61,10 @@ reservationsRouter.post("/", verifyToken, async (req, res) => {
     }
   }
 });
+
+
+//-----------------------------------------------------------------------------------------------------------------//
+
 // In dieser überarbeiteten Version der Funktion werden bei Fehlern spezifischere Meldungen zurückgegeben, 
 // abhängig von der Art des aufgetretenen Fehlers. Außerdem wird bei der Fehlerbehandlung der Name des Fehlers geprüft, um festzustellen, ob es sich um einen Validierungsfehler handelt. 
 // In diesem Fall wird eine detaillierte Fehlermeldung zurückgegeben, die Informationen über die ungültigen Eingabedaten enthält.
@@ -119,7 +112,6 @@ reservationsRouter.put("/:id", verifyToken, async (req, res) => {
   }
 });
 
-// Delete a reservation
 
 // Delete a reservation
 reservationsRouter.delete("/:id", verifyToken, async (req, res) => {
@@ -136,7 +128,7 @@ reservationsRouter.delete("/:id", verifyToken, async (req, res) => {
     const vehicle = await Vehicle.findById(deletedReservation.vehicle);
     vehicle.quantity += 1;
     await vehicle.save();
-console.log(vehicle);
+    console.log(vehicle);
     res.json({ message: "Reservation successfully deleted", reservation: deletedReservation });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -144,20 +136,5 @@ console.log(vehicle);
 });
 
 
-/* reservationsRouter.delete("/:id", verifyToken, async (req, res) => {
-  try {
-    const deletedReservation = await Reservation.findByIdAndDelete(req.params.id);
-
-    if (!deletedReservation) {
-      return res
-        .status(404)
-        .json({ message: "Reservation not found with the given ID" });
-    }
-
-    res.json({ message: "Reservation successfully deleted", reservation: deletedReservation });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-}); */
 
 export default reservationsRouter;

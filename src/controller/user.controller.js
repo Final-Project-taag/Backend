@@ -4,29 +4,65 @@ import * as UserModel from "../model/user.model.js";
 
 
   
- export async function registerNewUser(req, res) {
-    
+// Funktion, um die Gültigkeit der E-Mail-Adresse zu überprüfen
+function isValidEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
 
+export async function registerNewUser(req, res) {
     try {
         let body = req.body;
         console.log(body.password);
-        // Ueberschreibe password-Property im body mit dem Hash des Passworts
-    body.password = bcrypt.hashSync(body.password, 10);
 
-        // Fuehre Model-Funktion zum Einfuegen eines neuen Users aus
-         await UserModel.insertNewUser(body);
+        // Überprüfe, ob das Passwort mindestens 8 Zeichen lang ist
+        if (body.password.length < 8) {
+            res.status(400).json({
+                success: false,
+                message: 'Passwort mind. 8 Charakter'
+            });
+            return;
+        }
 
-        // Sende Erfolgsmeldung zurueck
+        // Überprüfe, ob die E-Mail-Adresse gültig ist
+        if (!isValidEmail(body.email)) {
+            res.status(400).json({
+                success: false,
+                message: 'Ungültige E-Mail-Adresse'
+            });
+            return;
+        }
+
+        // Überschreibe password-Property im body mit dem Hash des Passworts
+        body.password = bcrypt.hashSync(body.password, 10);
+
+        // Führe Model-Funktion zum Einfügen eines neuen Users aus und fange mögliche Fehler auf
+        try {
+            await UserModel.insertNewUser(body);
+        } catch (err) {
+            if (err.code === 'USERNAME_ALREADY_EXISTS') {
+                res.status(400).json({
+                    success: false,
+                    message: 'Benutzername bereits registriert'
+                });
+                return;
+            }
+            throw err;
+        }
+
+        // Sende Erfolgsmeldung zurück
         res.status(201).json({ success: true });
-        
-    }   catch (error) {
+
+    } catch (error) {
         console.log(error);
         res.status(500).json({
             success: false,
             message: 'Internal server error'
         });
     }
-} 
+}
+
+
  
 
 
