@@ -61,19 +61,12 @@ import vehicleRouter from './routes/vehicle.route.js';
  import reservationsRouter from './routes/reservations.route.js';
  import bookingRouter from './routes/booking.route.js';
 import { startBackgroundTasks } from './backgroundtasks/ backgroundTasks.js';
-<<<<<<< HEAD
 import paymentRouter from "./routes/payment.route.js";
 import vehicleCountsRouter from './routes/vehicleCounts.route.js';
 import paymentSuccessRouter from './routes/payment-success.route.js';
 import paymentWebhookRouter from './routes/paymentWebhook.route.js';
-=======
 import { seedRoles } from './model/role.model.js';
 import * as MailService from './service/mail.service.js';
-/* import { newReservation } from './controller/reservationsController.js';
- *//* import { addVehicles } from './controllers/vehicleController';
- */
-import {showAvailableVehicleCounts} from './controller/vehicle.add.js';
->>>>>>> feature/email-verification-backend
 //-------------------------------------------------------------------------------------
 dotenv.config();
 
@@ -137,10 +130,5 @@ startBackgroundTasks();
 // ----------------------------------------------------------
 
 app.listen(process.env.API_PORT, () => {
-<<<<<<< HEAD
-  console.log(`Server is listening on http://localhost:${process.env.API_PORT}`);
-});
-=======
     console.log(`Server is listening on http://localhost:${process.env.API_PORT}`);
 });
->>>>>>> feature/email-verification-backend

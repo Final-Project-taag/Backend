@@ -1,4 +1,4 @@
-import createMollieClient from '@mollie/api-client';
+import { createMollieClient } from '@mollie/api-client';
 import dotenv from 'dotenv';
 
 dotenv.config();

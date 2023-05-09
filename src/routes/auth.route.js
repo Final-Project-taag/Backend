@@ -1,10 +1,6 @@
 
 import { Router } from "express";
-<<<<<<< HEAD
-import { registerNewUser, login, } from "../controller/user.controller.js";
-=======
 import { registerNewUser, login,verifyEmail, refreshNewVerification} from "../controller/user.controller.js";
->>>>>>> feature/email-verification-backend
 
 // Erstelle neue Router Instanz
 const authRouter = Router();

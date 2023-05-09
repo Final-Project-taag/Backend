@@ -18,10 +18,6 @@ const reservationSchema = new mongoose.Schema({
     required: Date.now,
   },
   
-<<<<<<< HEAD
-
-=======
->>>>>>> feature/email-verification-backend
   reserved: {
     type: Boolean,
     default: false,
