@@ -15,20 +15,7 @@ const reservationSchema = new mongoose.Schema({
   },
   startDate: {
     type: Date,
-<<<<<<< HEAD
-    required: true,
-  },
-  endDate: {
-    type: Date,
-    required: true,
-  },
-  
-  createdAt: {
-    type: Date,
-    default: Date.now,
-=======
     required: Date.now,
->>>>>>> gaby
   },
   
   reserved: {

@@ -11,21 +11,12 @@ mongoose.set('strictQuery', true);
             maxPoolSize: 10
         });
 
-<<<<<<< HEAD
-// Falls callback direkt nach Verbindung ausgefuehrt werden soll
-// Bspw. ein Seeding von intialen DB Eintraegen
-if (callback) {
-// fuehre callback aus
-callback();
-}
-=======
         // Falls callback direkt nach Verbindung ausgefuehrt werden soll
         // Bspw. ein Seeding von intialen DB Eintraegen
         if (callback) {
             // fuehre callback aus
             callback();
         }
->>>>>>> gaby
 
         console.log('Verbindung zu MongoDB Atlas hergestellt');
     } catch (error) {
