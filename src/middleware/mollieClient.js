@@ -1,17 +1,16 @@
+import { createMollieClient } from '@mollie/api-client';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-async function createMollieClient() {
-  const Mollie = await import('@mollie/api-client');
+async function getMollieClient() {
 
-  const mollieClient = new Mollie.default({
+  const mollieClient = createMollieClient({
     apiKey: process.env.MOLLIE_API_KEY,
   });
 
   return mollieClient;
 }
 
-export default createMollieClient;
+export default getMollieClient;
 
- 

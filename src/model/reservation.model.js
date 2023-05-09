@@ -24,7 +24,9 @@ const reservationSchema = new mongoose.Schema({
   },
   reservedUntil: {
     type: Date,
-  }
+  },
+  
+
 });
 
 const Reservation = mongoose.model("Reservation", reservationSchema);

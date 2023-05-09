@@ -1,9 +1,7 @@
 import express from 'express';
-/* import { Router } from "express";
- */
 import verifyToken from "../middleware/verifyToken.js";
-import createMollieClient from "../middleware/mollieClient.js";
-import Order from "../model/order.payment.model.js";
+import getMollieClient from "../middleware/mollieClient.js";
+import Reservation from "../model/reservation.model.js"
 
 const router = express.Router();
 
@@ -11,7 +9,7 @@ const router = express.Router();
 
 router.get("/", verifyToken, async (req, res) => {
     try {
-        const orders = await Order.find({ user: req.tokenPayload.id });
+        const orders = await Booking.find({ user: req.tokenPayload.id });
         if (orders.length === 0) {
             return res.status(404).json({ message: "No orders found for the current user." });
         }
@@ -26,17 +24,30 @@ router.get("/", verifyToken, async (req, res) => {
     }
 });
 
+
+
+
 // Route zum Erstellen einer neuen Zahlung
 router.post('/create-payment', verifyToken, async (req, res) => {
-    const { amount, description, redirectUrl, webhookUrl } = req.body;
+    const {reservationId, description, redirectUrl, webhookUrl } = req.body;
+console.log(req.body);
+    // Finden Sie die Reservierung anhand der reservationId
+    const reservation = await Reservation.findById(reservationId).populate('vehicle');
+    if (!reservation) {
+        // Wenn keine Reservierung gefunden wurde, senden Sie einen Fehler zurück
+        return res.status(404).json({ message: "Reservation not found." });
+    }
+
+    // Extrahieren Sie den totalPrice aus der Reservierung
+    const totalPrice = reservation.vehicle.price;  // Benutzen Sie den Preis des Fahrzeugs
 
     try {
-        const mollieClient = await createMollieClient();
+        const mollieClient = await getMollieClient();
 
         const payment = await mollieClient.payments.create({
             amount: {
                 currency: "EUR",
-                value: amount.toFixed(2),
+                value: totalPrice.toFixed(2),
             },
             description: description,
             redirectUrl: redirectUrl,
@@ -44,8 +55,8 @@ router.post('/create-payment', verifyToken, async (req, res) => {
         });
 
         // Speichern Sie die Zahlungsinformationen in Ihrer Datenbank
-        const order = new Order({
-            orderId: payment.id,
+        const order = new Reservation({
+             orderId: reservationId,  // Verwenden Sie die Reservierungs-ID aus dem Anfragekörper als orderId
             paymentId: payment.id,
             status: payment.status,
             user: req.tokenPayload.id,
@@ -60,9 +71,13 @@ router.post('/create-payment', verifyToken, async (req, res) => {
             order: newOrder,
         });
     } catch (error) {
+        console.log(error);
         res.status(400).json({ message: `An error occurred while creating the payment: ${error.message}` });
     }
 });
+
+
+
 
 //  erstellt die Route /create-payment eine neue Zahlung mit dem mollieClient. Zuerst extrahieren wir die erforderlichen Informationen (amount, description, redirectUrl und webhookUrl) aus dem Anfragekörper.
 // Dann verwenden wir den mollieClient, um eine neue Zahlung mit diesen Informationen zu erstellen. Nachdem die Zahlung erstellt wurde, speichern wir die Zahlungsinformationen in der Datenbank, indem wir ein neues Order-Dokument erstellen und speichern.

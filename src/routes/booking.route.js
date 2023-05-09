@@ -19,9 +19,9 @@ router.get("/", verifyToken, async (req, res) => {
 
 // Route zum Erstellen einer neuen Buchung
 router.post("/", verifyToken, async (req, res) => {
-  const { reservationId } = req.body;
+  const { bookingId } = req.body;
   const booking = new Booking({
-    reservation: reservationId,
+    booking: bookingId,
     user: req.tokenPayload.id,
   });
 
