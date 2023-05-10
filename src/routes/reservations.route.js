@@ -3,7 +3,6 @@
 import { Router } from "express";
 import Reservation from "../model/reservation.model.js";
 import Vehicle from "../model/vehicle.model.js";
-import jwt from 'jsonwebtoken';
 import verifyToken from "../middleware/verifyToken.js";
 
 const reservationsRouter = Router();
@@ -29,15 +28,16 @@ reservationsRouter.post("/", verifyToken, async (req, res) => {
   const reservationDuration = 60 * 60 * 1000;
 
   // Calculate the reservedUntil date
-  const reservedUntil = new Date(Date.now() + reservationDuration);
+/*   const reservedUntil = new Date(Date.now() + reservationDuration);
+ */  const endDate = new Date(Date.now() + reservationDuration);
 
   const reservation = new Reservation({
     vehicle: vehicleId,
     user: userId,
     startDate: new Date(),
-  
+    endDate,
     reserved: true,
-    reservedUntil,
+  /*   reservedUntil, */
     
   });
 
@@ -89,8 +89,40 @@ reservationsRouter.get("/:id", verifyToken, async (req, res) => {
   }
 });
 
+
 // Update a reservation
 reservationsRouter.put("/:id", verifyToken, async (req, res) => {
+  const { startDate, endDate } = req.body;
+
+  try {
+    let reservation = await Reservation.findById(req.params.id).populate("vehicle");
+
+    if (!reservation) {
+      return res
+        .status(404)
+        .json({ message: "Reservation not found with the given ID" });
+    }
+
+    // Calculate the total price
+    const startTime = new Date(startDate);
+    const endTime = new Date(endDate);
+    const durationHours = Math.abs(endTime - startTime) / 36e5; // convert duration from milliseconds to hours
+    const totalPrice = durationHours * reservation.vehicle.price;
+
+    // Update the reservation
+    reservation.startDate = startTime;
+    reservation.endDate = endTime;
+    reservation.totalPrice = totalPrice;
+
+    const updatedReservation = await reservation.save();
+
+    res.json(updatedReservation);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+});
+
+/* reservationsRouter.put("/:id", verifyToken, async (req, res) => {
   const { startDate, endDate } = req.body;
 
   try {
@@ -115,7 +147,7 @@ reservationsRouter.put("/:id", verifyToken, async (req, res) => {
   }
 });
 
-
+ */
 // Delete a reservation
 
 // Delete a reservation

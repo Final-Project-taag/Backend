@@ -17,7 +17,10 @@ const reservationSchema = new mongoose.Schema({
     type: Date,
     required: Date.now,
   },
-  
+  endDate:{
+    type: Date,
+    
+  },
   reserved: {
     type: Boolean,
     default: false,
