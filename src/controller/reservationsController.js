@@ -6,6 +6,7 @@ export const newReservation = await Reservation.create({
     user: userId,
     startDate,
     reserved: true,
+    reservedUntil: endDate,
   });
   
   await Vehicle.updateQuantity(vehicleId, 1);

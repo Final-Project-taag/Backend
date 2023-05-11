@@ -17,15 +17,25 @@ const reservationSchema = new mongoose.Schema({
     type: Date,
     required: Date.now,
   },
-  
+  endDate:{
+    type: Date,
+    
+  },
   reserved: {
     type: Boolean,
     default: false,
   },
   reservedUntil: {
     type: Date,
+  },
+  isBooked: {
+    type: Boolean,
+    default: false,
   }
+
 });
+
+
 
 const Reservation = mongoose.model("Reservation", reservationSchema);
 
