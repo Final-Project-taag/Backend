@@ -1,5 +1,4 @@
 
-
 import { Router } from "express";
 import Reservation from "../model/reservation.model.js";
 import Vehicle from "../model/vehicle.model.js";
@@ -7,9 +6,30 @@ import verifyToken from "../middleware/verifyToken.js";
 
 const reservationsRouter = Router();
 
+// ---------------------------------Get active reservations-------------------------------//
+reservationsRouter.get("/active", verifyToken, async (req, res) => {
+  try {
+    const activeReservations = await getActiveReservations();
+    if (!activeReservations || activeReservations.length === 0) {
+        throw new Error('Keine aktive Reservierung gefunden');
+    }
+    const bookingId = activeReservations[0]._id;
+    
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Definition von getActiveReservations
+const getActiveReservations = async () => {
+  const reservations = await Reservation.find({ isBooked: false });
+  return reservations;
+};
+
+
 // Get all reservations
 reservationsRouter.get("/", verifyToken, async (req, res) => {
-  try {
+  try {   
     const userId = req.tokenPayload.userId;
     const reservations = await Reservation.find({ user: userId }).populate("vehicle");
     res.json(reservations);
@@ -64,8 +84,6 @@ reservationsRouter.post("/", verifyToken, async (req, res) => {
     }
   }
 });
-
-
 //-----------------------------------------------------------------------------------------------------------------//
 
 // In dieser überarbeiteten Version der Funktion werden bei Fehlern spezifischere Meldungen zurückgegeben, 
@@ -121,34 +139,6 @@ reservationsRouter.put("/:id", verifyToken, async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 });
-
-/* reservationsRouter.put("/:id", verifyToken, async (req, res) => {
-  const { startDate, endDate } = req.body;
-
-  try {
-    const updatedReservation = await Reservation.findByIdAndUpdate(
-      req.params.id,
-      {
-        startDate,
-        endDate,
-      },
-      { new: true }
-    );
-
-    if (!updatedReservation) {
-      return res
-        .status(404)
-        .json({ message: "Reservation not found with the given ID" });
-    }
-
-    res.json(updatedReservation);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-});
-
- */
-// Delete a reservation
 
 // Delete a reservation
 reservationsRouter.delete("/:id", verifyToken, async (req, res) => {

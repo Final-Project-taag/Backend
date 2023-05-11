@@ -17,14 +17,20 @@ router.get("/", verifyToken, async (req, res) => {
 
 // Route zum Erstellen einer neuen Buchung
 router.post("/", verifyToken, async (req, res) => {
-  const { bookingId } = req.body;
+  const { bookingId, vehicle, startDate, endDate, user, totalPrice } = req.body;
+
+  // Validierung der eingehenden Daten hinzufügen
+
   const booking = new Booking({
-    booking: bookingId,
-    user: req.tokenPayload.id,
+    bookingId,
+    vehicle,
+    startDate: new Date(startDate),
+    endDate: new Date(endDate),
+    user: req.tokenPayload.id, // Benutzerdaten aus dem Token verwenden, falls nicht in req.body vorhanden
+    totalPrice,
   });
 
   try {
-  
     const newBooking = await booking.save();
     res.status(201).json(newBooking);
   } catch (error) {
