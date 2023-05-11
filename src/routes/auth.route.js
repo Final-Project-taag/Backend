@@ -13,5 +13,10 @@ authRouter.route('/register')
 authRouter.route('/login')
     .post(login);
 
+// Routen Definition fuer /verify (Email-Verifikation)
+authRouter.route('/verify')
+    .post(verifyEmail)
+    .put(refreshNewVerification);
 
+    
 export default authRouter;
