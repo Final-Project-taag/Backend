@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 
-
 export async function connectToDb(callback) {
     try {
         // Setze den 'strict' Mode fuer mongoose (Felder, die nicht im Schema enthalten sind, werden nicht mitgespeichert)

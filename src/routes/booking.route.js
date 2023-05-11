@@ -1,8 +1,9 @@
 import { Router } from "express";
 import Booking from "../model/booking.model.js";
-import verifyToken from "../middleware/verifyToken.js"
+import verifyToken from "../middleware/verifyToken.js";
 
 const router = Router();
+
 
 // Route zum Abrufen aller Buchungen für den aktuellen Benutzer
 router.get("/", verifyToken, async (req, res) => {
@@ -23,6 +24,7 @@ router.post("/", verifyToken, async (req, res) => {
   });
 
   try {
+  
     const newBooking = await booking.save();
     res.status(201).json(newBooking);
   } catch (error) {

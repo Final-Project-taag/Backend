@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/Final-Project-taag/Backend#readme",
   "dependencies": {
+    "@mollie/api-client": "^3.7.0",
     "axios": "^1.3.4",
     "bcrypt": "^5.1.0",
     "cors": "^2.8.5",
@@ -28,6 +29,7 @@
     "jsonwebtoken": "^9.0.0",
     "mongodb": "^5.1.0",
     "mongoose": "^7.0.3",
+    "nodemailer": "^6.9.1",
     "path": "^0.12.7",
     "router": "^1.3.8"
   },
