@@ -1,23 +1,54 @@
 import Vehicle from '../model/vehicle.model.js'
+import cron from 'node-cron';
 
-
-// Hintergrundprozess, der regelmäßig prüft, ob Reservierungen abgelaufen sind,
+// Hintergrundfunktion, die regelmäßig überprüft, ob Reservierungen abgelaufen sind
 // und den Status der Fahrzeuge entsprechend aktualisiert:
 
 async function checkExpiredReservations() {
   try {
+    // Aktuelle Zeit holen
     const now = new Date();
-    const vehicles = await Vehicle.find({ reserved: true, reservedUntil: { $lt: now } });
 
+    // Alle Fahrzeuge finden, die reserviert sind und deren Enddatum vor der aktuellen Zeit liegt
+    const vehicles = await Vehicle.find({ reserved: true, endDate: { $lt: now } });
+
+    // Durchlaufen Sie jedes abgelaufene Fahrzeug und aktualisieren Sie seinen Status
     for (const vehicle of vehicles) {
-      await Vehicle.findByIdAndUpdate(vehicle._id, { reserved: false, reservedUntil: null });
+      await Vehicle.findByIdAndUpdate(vehicle._id, { reserved: false, endDate: null });
     }
   } catch (error) {
-    console.error("Error checking expired reservations:", error);
+    // Bei einem Fehler, loggen Sie die Fehlermeldung
+    console.error("Fehler beim Prüfen abgelaufener Reservierungen:", error);
   }
 }
 
 export function startBackgroundTasks() {
-  // Run the checkExpiredReservations function every hour
+  // Führe die Funktion checkExpiredReservations jede Stunde aus
   setInterval(checkExpiredReservations, 60 * 60 * 1000);
 }
+
+
+// Plane eine Aufgabe, die jeden Tag um 00:00 Uhr ausgeführt wird
+cron.schedule('0 0 * * *', async () => {
+  try {
+    // Hole alle Reservierungen
+    const allReservations = await Reservation.find();
+
+    // Filtere die Reservierungen heraus, die abgelaufen sind
+    const expiredReservations = allReservations.filter((res) => {
+      const endDate = new Date(res.endDate);
+      return endDate < new Date();
+    });
+
+    // Lösche alle abgelaufenen Reservierungen
+    for (let res of expiredReservations) {
+      await Reservation.findByIdAndDelete(res._id);
+    }
+
+    // Logge eine Erfolgsmeldung
+    console.log('Abgelaufene Reservierungen erfolgreich gelöscht');
+  } catch (error) {
+    // Bei einem Fehler, loggen Sie die Fehlermeldung
+    console.error("Fehler beim Löschen abgelaufener Reservierungen:", error);
+  }
+});
