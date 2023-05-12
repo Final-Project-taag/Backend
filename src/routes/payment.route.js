@@ -1,6 +1,6 @@
 import express from 'express';
 import verifyToken from "../middleware/verifyToken.js";
-import getMollieClient from "../middleware/mollieClient.js";
+import getMollieClient from "../service/mollieClient.js";
 import Reservation from "../model/reservation.model.js"
 
 const router = express.Router();
