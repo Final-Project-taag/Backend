@@ -15,21 +15,30 @@ const userSchema = mongoose.Schema({
 }, { timestamps: true });
 
  
-// Erstelle eine neue Instanz des Date-Objekts und formatiere es als String mit der Zeitzone "Europe/Berlin"
-// const germanTime = new Date().toLocaleString("en-US", { timeZone: "Europe/Berlin" });
-
+ 
  
 // Erstelle ein neues Model Objekt fuer User
 // Erstellt automatisch users Collection in der MongoDB, wenn noch nicht vorhanden
 const User = mongoose.model('User', userSchema);
 
 // DB-Funktion zum Abrufen eines bestimmten User-Eintrags per username
+// export async function findUserByUsername(username) {
+//     let user = await User.findOne({username: username}).populate('role');
+//     user.lastLogin = Date.now();
+//     await user.save();
+//     return user;
+// }
+
 export async function findUserByUsername(username) {
-    let user = await User.findOne({username: username}).populate('role');
-    user.lastLogin = Date.now();
-    await user.save();
-    return user;
-}
+    try {
+      let user = await User.findOne({username: username}).populate('role');
+      user.lastLogin = Date.now();
+      await user.save();
+      return user;
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
 // DB-Funktion zum Erstellen eines neuen User-Eintrags
 export async function insertNewUser(userBody) {
