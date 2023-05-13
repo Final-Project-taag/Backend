@@ -2,7 +2,7 @@
 import mongoose from "mongoose";
 import * as RoleModel from './role.model.js';
 
-// Definiere Todo Schema
+// Definiere User Schema
 const userSchema = mongoose.Schema({
     username: { type: String, required: true, unique: true },
     email: { type: String, required: true, unique: true },
@@ -10,17 +10,25 @@ const userSchema = mongoose.Schema({
     fullname: { type: String, required: true },
     city: { type: String },
     role: { type: mongoose.Schema.Types.ObjectId, ref: 'Role' },
-    emailHash: { type: String }
+    lastLogin:{ type: Date},
+    emailHash: { type: String },
 }, { timestamps: true });
 
+ 
+// Erstelle eine neue Instanz des Date-Objekts und formatiere es als String mit der Zeitzone "Europe/Berlin"
+// const germanTime = new Date().toLocaleString("en-US", { timeZone: "Europe/Berlin" });
 
+ 
 // Erstelle ein neues Model Objekt fuer User
 // Erstellt automatisch users Collection in der MongoDB, wenn noch nicht vorhanden
 const User = mongoose.model('User', userSchema);
 
 // DB-Funktion zum Abrufen eines bestimmten User-Eintrags per username
 export async function findUserByUsername(username) {
-    return await User.findOne({username: username}).populate('role');
+    let user = await User.findOne({username: username}).populate('role');
+    user.lastLogin = Date.now();
+    await user.save();
+    return user;
 }
 
 // DB-Funktion zum Erstellen eines neuen User-Eintrags
@@ -73,6 +81,7 @@ export async function setVerified(id) {
     const user = await User.findById(id);
 
     // TODO pruefe existenz
+    
 
     const userRole = await RoleModel.findByName(RoleModel.rolesEnum.user);
 

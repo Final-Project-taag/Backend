@@ -130,7 +130,7 @@ export async function verifyEmail(req, res) {
     // Redirect auf entsprechende Frontend-Page
     // res.redirect('https://google.de');
     res.send({
-        redirectTo: 'http://localhost:5173/login',
+        redirectTo: 'http://localhost:5173/auth/login',
         message: 'Thank you for verifying your e-mail address'
     });
 }
