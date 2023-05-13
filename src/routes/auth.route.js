@@ -1,4 +1,4 @@
-
+ 
 import { Router } from "express";
 import { registerNewUser, login,verifyEmail, refreshNewVerification} from "../controller/user.controller.js";
 
@@ -13,6 +13,7 @@ authRouter.route('/register')
 authRouter.route('/login')
     .post(login);
 
+    
 // Routen Definition fuer /verify (Email-Verifikation)
 authRouter.route('/verify')
     .post(verifyEmail)
