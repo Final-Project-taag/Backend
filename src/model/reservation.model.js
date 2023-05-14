@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
 
+
 const reservationSchema = new mongoose.Schema({
+
   vehicle: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Vehicle",
@@ -13,17 +15,27 @@ const reservationSchema = new mongoose.Schema({
   },
   startDate: {
     type: Date,
-    required: true,
+    required: Date.now,
   },
-  endDate: {
+  endDate:{
     type: Date,
-    required: true,
+    
   },
-  createdAt: {
+  reserved: {
+    type: Boolean,
+    default: false,
+  },
+  reservedUntil: {
     type: Date,
-    default: Date.now,
   },
+  isBooked: {
+    type: Boolean,
+    default: false,
+  }
+
 });
+
+
 
 const Reservation = mongoose.model("Reservation", reservationSchema);
 

@@ -1,5 +1,6 @@
+ 
 import { Router } from "express";
-import { registerNewUser, login} from "../controller/user.controller.js";
+import { registerNewUser, login,verifyEmail, refreshNewVerification} from "../controller/user.controller.js";
 
 // Erstelle neue Router Instanz
 const authRouter = Router();
@@ -12,5 +13,11 @@ authRouter.route('/register')
 authRouter.route('/login')
     .post(login);
 
+    
+// Routen Definition fuer /verify (Email-Verifikation)
+authRouter.route('/verify')
+    .post(verifyEmail)
+    .put(refreshNewVerification);
 
+    
 export default authRouter;
