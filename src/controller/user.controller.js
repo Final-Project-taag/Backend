@@ -1,7 +1,6 @@
 import bcrypt from 'bcrypt';
 import jwt from "jsonwebtoken";
 import md5 from 'md5';
-
 import * as UserModel from "../model/user.model.js";
 import { rolesEnum } from '../model/role.model.js';
 import * as MailService from '../service/mail.service.js';
@@ -106,6 +105,7 @@ export async function login(req, res) {
     });
   }
 }
+
 export default function loadUser(req, res) {
   res.send(req.tokenPayload);
 }
