@@ -82,7 +82,7 @@ export async function login(req, res) {
   if (bcrypt.compareSync(password, user.password)) {
     // Erstelle neuen JWT Token mit payload und Verfall nach einer Stunde (60 Minuten * 60 Sekunden)
     let token = jwt.sign(
-      { userId: user._id, username: user.username, email: user.email },
+      { userId: user._id, fullname: user.fullname, username: user.username, email: user.email },
       process.env.JWT_SECRET,
       { expiresIn: 60 * 600 }
     );
