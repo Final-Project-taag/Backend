@@ -116,7 +116,7 @@ export async function getByEmailHash(hash) {
 export async function setVerified(id) {
     const user = await User.findById(id);
 
-    // TODO pruefe existenz
+    
 
     const userRole = await RoleModel.findByName(RoleModel.rolesEnum.user);
 
