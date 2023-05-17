@@ -15,6 +15,28 @@ router.get("/", verifyToken, async (req, res) => {
   }
 });
 
+/* router.post('/', verifyToken, async (req, res) => {
+  const { bookingId, user, vehicle, startDate, endDate, totalPrice } = req.body;
+
+  try {
+    // Hier finden Sie die Buchung und aktualisieren das isBooked-Feld
+    const updatedBooking = await Booking.findByIdAndUpdate(
+      bookingId,
+      { user, vehicle, startDate, endDate, totalPrice, isBooked: true }, // Setzen Sie isBooked auf true
+      { new: true } // Diese Option stellt sicher, dass die aktualisierte Version des Dokuments zurückgegeben wird
+    );
+
+    if (!updatedBooking) {
+      return res.status(404).json({ message: "Buchung nicht gefunden" });
+    }
+
+    res.status(201).json(updatedBooking);
+  } catch (error) {
+    console.error("Fehler bei der Buchung: ", error);
+    res.status(500).json({ message: error.message });
+  }
+}); */
+
 // Route zum Erstellen einer neuen Buchung
 router.post("/", verifyToken, async (req, res) => {
   const { bookingId, vehicle, startDate, endDate, user, totalPrice } = req.body;
@@ -38,6 +60,7 @@ router.post("/", verifyToken, async (req, res) => {
   }
 });
 
+ 
 // Route zum Abrufen von Informationen zu einer bestimmten Buchung
 router.get("/:id", verifyToken, async (req, res) => {
   try {
