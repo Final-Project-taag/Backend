@@ -22,7 +22,7 @@ reservationsRouter.get("/active", verifyToken, async (req, res) => {
 
 // Definition von getActiveReservations
 const getActiveReservations = async () => {
-  const reservations = await Reservation.find({ isBooked: false });
+  const reservations = await Reservation.find({ reserved: true });
   return reservations;
 };
 

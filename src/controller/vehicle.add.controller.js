@@ -18,17 +18,17 @@ export const addVehicles = async (vehicleData, count) => {
     console.error('Fehler beim Hinzufügen von Fahrzeugen:', err);
   }
 };
-/* 
+ 
     // Beispiel-Daten für ein Fahrzeug
-   const vehicleData = {
-    type: 'car',
-    name: 'Tesla Model 3',
+ /*   const vehicleData = {
+    type: 'transporter',
+    name: 'Vivaro Tranporter 3',
     driveRange: 350,
-    weight: 1610,
-    price: 250,
+    weight: 2400,
+    price: 40,
     imageUrls: ['public/images/Tesla-Model-3.webp'],
     chargingTime: 8,
-    quantity: 5,
+    quantity: 10,
     
   };
   
@@ -36,8 +36,8 @@ export const addVehicles = async (vehicleData, count) => {
   
   addVehicles(vehicleData, numberOfVehiclesToAdd); // Führen Sie die Funktion aus, um die Fahrzeuge hinzuzufügen
    
-        
- */
+         */
+ 
 //----------------------------ANZAHL DER FAHRUZEUGEN ------------------------------------------
 
 // In diesem Beispiel wird eine Funktion showAvailableVehicleCounts erstellt, die die aggregate() Funktion verwendet, 
