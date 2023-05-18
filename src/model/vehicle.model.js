@@ -1,3 +1,4 @@
+
 import mongoose from 'mongoose';
 
 
@@ -14,6 +15,7 @@ const vehicleSchema = new Schema({
     type: String,
     required: true,
   },
+
   driveRange: {
     type: Number,
     required: true,
@@ -63,3 +65,4 @@ vehicleSchema.statics.updateQuantity = async function (vehicleId, quantity) {
 const Vehicle = mongoose.model('Vehicle', vehicleSchema);
 
 export default Vehicle;
+

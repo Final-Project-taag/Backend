@@ -1,3 +1,4 @@
+
 import { Router } from "express";
 import loadUser, {
   registerNewUser,
@@ -6,7 +7,6 @@ import loadUser, {
   refreshNewVerification,
 } from "../controller/user.controller.js";
 import verifyToken from "../middleware/verifyToken.js";
-
 
 // Erstelle neue Router Instanz
 const authRouter = Router();

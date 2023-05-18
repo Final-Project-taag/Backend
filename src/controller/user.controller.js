@@ -67,6 +67,7 @@ export async function login(req, res) {
   let { username, password } = req.body;
   // Hole entsprechenden User per username aus der DB
   let user = await UserModel.findUserByUsername(username);
+  
   // Wenn user nicht gefunden wurde
   if (user === null) {
     // Sende 401 (UNAUTHORIZED) mit Nachricht
@@ -81,7 +82,7 @@ export async function login(req, res) {
   if (bcrypt.compareSync(password, user.password)) {
     // Erstelle neuen JWT Token mit payload und Verfall nach einer Stunde (60 Minuten * 60 Sekunden)
     let token = jwt.sign(
-      { userId: user._id, username: user.username, email: user.email },
+      { userId: user._id, fullname: user.fullname, username: user.username, email: user.email, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: 60 * 600 }
     );
@@ -96,6 +97,7 @@ export async function login(req, res) {
       email: user.email,
       fullname: user.fullname,
       token: token,
+      role: user.role
     });
   } else {
     // Passwort falsch -> Sende Fehlermeldung zurueck
@@ -106,8 +108,38 @@ export async function login(req, res) {
   }
 }
 
-export default function loadUser(req, res) {
-  res.send(req.tokenPayload);
+export default async  function loadUser(req, res) {
+  let username = req.tokenPayload.username;
+  let user = await  UserModel.findUserByUsername(username);
+
+
+   // Wenn user nicht gefunden wurde
+   if (user === null) {
+    // Sende 401 (UNAUTHORIZED) mit Nachricht
+    res.status(401).send({
+      success: false,
+      message: "Incorrect username or password",
+    });
+    // early return
+    return;
+  }
+
+  let token = req.headers.authorization.split(" ")[1];
+
+  // Sende Erfolgsnachricht sowie neuen Token zurueck
+  res.send({
+    success: true,
+    message: `User ${user.username} logged in successfully!`,
+    id: user._id,
+    username: user.username,
+    email: user.email,
+    fullname: user.fullname,
+    token: token,
+    role: user.role
+  });
+
+
+
 }
 
 
