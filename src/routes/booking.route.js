@@ -8,8 +8,13 @@ const router = Router();
 // Route zum Abrufen aller Buchungen für den aktuellen Benutzer
 router.get("/", verifyToken, async (req, res) => {
   try {
-    const bookings = await Booking.find({ user: req.tokenPayload.id });
+    if(req.tokenPayload.role.name !== "admin") {
+    const bookings = await Booking.find({ user: req.tokenPayload.userId });
     res.json(bookings);
+    }else{
+      const bookings = await Booking.find();
+      res.json(bookings);
+    }
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -48,7 +53,7 @@ router.post("/", verifyToken, async (req, res) => {
     vehicle,
     startDate: new Date(startDate),
     endDate: new Date(endDate),
-    user: req.tokenPayload.id, // Benutzerdaten aus dem Token verwenden, falls nicht in req.body vorhanden
+    user: req.tokenPayload.userId, // Benutzerdaten aus dem Token verwenden, falls nicht in req.body vorhanden
     totalPrice,
   });
 

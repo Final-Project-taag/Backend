@@ -3,7 +3,12 @@ import cron from 'node-cron';
 
 // Hintergrundfunktion, die regelmäßig überprüft, ob Reservierungen abgelaufen sind
 // und den Status der Fahrzeuge entsprechend aktualisiert:
-
+export const calculatePrice = (startDate, endDate, price) => {
+    const startTime = new Date(startDate);
+    const endTime = new Date(endDate);
+    const durationHours = Math.abs(endTime - startTime) / 36e5; // convert duration from milliseconds to hours
+    return durationHours * price;
+}
 async function checkExpiredReservations() {
   try {
     // Aktuelle Zeit holen
@@ -52,3 +57,4 @@ cron.schedule('0 0 * * *', async () => {
     console.error("Fehler beim Löschen abgelaufener Reservierungen:", error);
   }
 });
+

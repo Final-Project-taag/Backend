@@ -30,7 +30,6 @@ router.get("/", verifyToken, async (req, res) => {
 // Route zum Erstellen einer neuen Zahlung
 router.post('/create-payment', verifyToken, async (req, res) => {
     const {reservationId, description, redirectUrl, webhookUrl } = req.body;
-console.log(req.body);
     // Finden Sie die Reservierung anhand der reservationId
     const reservation = await Reservation.findById(reservationId).populate('vehicle');
     if (!reservation) {

@@ -1,8 +1,8 @@
-
 import { Router } from "express";
 import Reservation from "../model/reservation.model.js";
 import Vehicle from "../model/vehicle.model.js";
 import verifyToken from "../middleware/verifyToken.js";
+import { calculatePrice } from "../backgroundtasks/ backgroundTasks.js";
 
 const reservationsRouter = Router();
 
@@ -11,10 +11,9 @@ reservationsRouter.get("/active", verifyToken, async (req, res) => {
   try {
     const activeReservations = await getActiveReservations();
     if (!activeReservations || activeReservations.length === 0) {
-        throw new Error('Keine aktive Reservierung gefunden');
+      throw new Error("Keine aktive Reservierung gefunden");
     }
     const bookingId = activeReservations[0]._id;
-    
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -26,13 +25,19 @@ const getActiveReservations = async () => {
   return reservations;
 };
 
-
 // Get all reservations
 reservationsRouter.get("/", verifyToken, async (req, res) => {
-  try {   
+  try {
     const userId = req.tokenPayload.userId;
-    const reservations = await Reservation.find({ user: userId }).populate("vehicle");
-    res.json(reservations);
+    if (req.tokenPayload.role && req.tokenPayload.role.name === "admin") {
+      const reservations = await Reservation.find().populate("vehicle");
+      res.json(reservations);
+    } else {
+      const reservations = await Reservation.find({ user: userId }).populate(
+        "vehicle"
+      );
+      res.json(reservations);
+    }
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -41,53 +46,61 @@ reservationsRouter.get("/", verifyToken, async (req, res) => {
 // Reservierungsanfrage schicken
 
 reservationsRouter.post("/", verifyToken, async (req, res) => {
-  const { vehicleId } = req.body;
+  const { vehicleId, startDate, endDate } = req.body;
   const userId = req.tokenPayload.userId;
 
   // Set the reservation duration to 60 minutes (in milliseconds)
-  const reservationDuration = 60 * 60 * 1000;
 
   // Calculate the reservedUntil date
-/*   const reservedUntil = new Date(Date.now() + reservationDuration);
- */  const endDate = new Date(Date.now() + reservationDuration);
+  /*   const reservedUntil = new Date(Date.now() + reservationDuration);
+   */
+  const vehicle =  await Vehicle.findById(vehicleId)
+
 
   const reservation = new Reservation({
     vehicle: vehicleId,
     user: userId,
-    startDate: new Date(),
+    startDate,
     endDate,
     reserved: true,
-  /*   reservedUntil, */
-    
+    totalPrice: calculatePrice(startDate,endDate, vehicle.price)
   });
 
   try {
     const newReservation = await reservation.save();
-    
-   
+
     if (!newReservation) {
-      return res.status(500).json({ message: "Fehler beim Speichern der Reservierung." });
+      return res
+        .status(500)
+        .json({ message: "Fehler beim Speichern der Reservierung." });
     }
 
     const updateResult = await Vehicle.updateQuantity(vehicleId, 1);
 
     if (!updateResult) {
-      return res.status(500).json({ message: "Fehler beim Aktualisieren der Fahrzeugmenge." });
+      return res
+        .status(500)
+        .json({ message: "Fehler beim Aktualisieren der Fahrzeugmenge." });
     }
 
     res.status(201).json(newReservation);
   } catch (error) {
     if (error.name === "ValidationError") {
-      res.status(400).json({ message: "Ungültige Eingabedaten.", details: error.errors });
+      res
+        .status(400)
+        .json({ message: "Ungültige Eingabedaten.", details: error.errors });
     } else {
-      res.status(500).json({ message: "Ein unerwarteter Fehler ist aufgetreten.", error: error.message });
+      res.status(500).json({
+        message: "Ein unerwarteter Fehler ist aufgetreten.",
+        error: error.message,
+      });
     }
   }
 });
 //-----------------------------------------------------------------------------------------------------------------//
 
-// In dieser überarbeiteten Version der Funktion werden bei Fehlern spezifischere Meldungen zurückgegeben, 
-// abhängig von der Art des aufgetretenen Fehlers. Außerdem wird bei der Fehlerbehandlung der Name des Fehlers geprüft, um festzustellen, ob es sich um einen Validierungsfehler handelt. 
+// In dieser überarbeiteten Version der Funktion werden bei Fehlern spezifischere Meldungen zurückgegeben,
+// abhängig von der Art des aufgetretenen Fehlers. Außerdem wird bei der Fehlerbehandlung der Name des Fehlers geprüft, um festzustellen, ob es sich um einen Validierungsfehler handelt.
 // In diesem Fall wird eine detaillierte Fehlermeldung zurückgegeben, die Informationen über die ungültigen Eingabedaten enthält.
 
 // Get a specific reservation
@@ -107,13 +120,14 @@ reservationsRouter.get("/:id", verifyToken, async (req, res) => {
   }
 });
 
-
 // Update a reservation
 reservationsRouter.put("/:id", verifyToken, async (req, res) => {
-  const { startDate, endDate } = req.body;
+  const { startDate, endDate, isBooked } = req.body;
 
   try {
-    let reservation = await Reservation.findById(req.params.id).populate("vehicle");
+    let reservation = await Reservation.findById(req.params.id).populate(
+      "vehicle"
+    );
 
     if (!reservation) {
       return res
@@ -122,15 +136,17 @@ reservationsRouter.put("/:id", verifyToken, async (req, res) => {
     }
 
     // Calculate the total price
-    const startTime = new Date(startDate);
-    const endTime = new Date(endDate);
-    const durationHours = Math.abs(endTime - startTime) / 36e5; // convert duration from milliseconds to hours
-    const totalPrice = durationHours * reservation.vehicle.price;
 
     // Update the reservation
-    reservation.startDate = startTime;
-    reservation.endDate = endTime;
-    reservation.totalPrice = totalPrice;
+    if (!!startDate && !!endDate) {
+      reservation.startDate = startTime;
+      reservation.endDate = endTime;
+      reservation.totalPrice =  calculatePrice(startDate,endDate, reservation.vehicle.price);
+    }
+
+    if (isBooked != null) {
+      reservation.isBooked = isBooked;
+    }
 
     const updatedReservation = await reservation.save();
 
@@ -140,10 +156,34 @@ reservationsRouter.put("/:id", verifyToken, async (req, res) => {
   }
 });
 
+// reservationsRouter.put("/book/:id", verifyToken, async (req, res) => {
+//   console.log("HOHOOOOOOO");
+//   try {
+//     let reservation = await Reservation.findById(req.params.id).populate(
+//       "user"
+//     );
+//     console.log({ reservation });
+//     if (!reservation) {
+//       return res
+//         .status(404)
+//         .json({ message: "Reservation not found with the given ID" });
+//     }
+//     // Update isBooked
+//     reservation.isBooked = true;
+//     //save booking
+//     const updatedReservation = await reservation.save();
+//     res.json(updatedReservation);
+//   } catch (error) {
+//     res.status(400).json({ message: error.message });
+//   }
+// });
+
 // Delete a reservation
 reservationsRouter.delete("/:id", verifyToken, async (req, res) => {
   try {
-    const deletedReservation = await Reservation.findByIdAndDelete(req.params.id);
+    const deletedReservation = await Reservation.findByIdAndDelete(
+      req.params.id
+    );
 
     if (!deletedReservation) {
       return res
@@ -155,13 +195,13 @@ reservationsRouter.delete("/:id", verifyToken, async (req, res) => {
     const vehicle = await Vehicle.findById(deletedReservation.vehicle);
     vehicle.quantity += 1;
     await vehicle.save();
-    console.log(vehicle);
-    res.json({ message: "Reservation successfully deleted", reservation: deletedReservation });
+    res.json({
+      message: "Reservation successfully deleted",
+      reservation: deletedReservation,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
-
-
 
 export default reservationsRouter;
