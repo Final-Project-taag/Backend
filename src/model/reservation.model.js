@@ -15,24 +15,26 @@ const reservationSchema = new mongoose.Schema({
   },
   startDate: {
     type: Date,
-    required: Date.now,
+    required: true,
   },
   endDate:{
     type: Date,
-    
+    required: true,
   },
-  reserved: {
-    type: Boolean,
-    default: false,
-  },
-  // reservedUntil: {
-  //   type: Date,
-  // },
+
   isBooked: {
     type: Boolean,
     default: false,
+  },
+  totalPrice: {
+    type: Number,
+    required:true
+  },
+  expireAt: {
+    type: Date,
+    default: ()=>new Date(),
+    expires: 3600
   }
-
 });
 
 

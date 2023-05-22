@@ -1,4 +1,5 @@
 import Vehicle from '../model/vehicle.model.js'
+import Reservation from '../model/reservation.model.js'
 import cron from 'node-cron';
 
 // Hintergrundfunktion, die regelmäßig überprüft, ob Reservierungen abgelaufen sind
@@ -57,4 +58,21 @@ cron.schedule('0 0 * * *', async () => {
     console.error("Fehler beim Löschen abgelaufener Reservierungen:", error);
   }
 });
+
+// export const cleanUpReservations = async (reservations)=>{
+//   return reservations.map(async reservation => {
+//     const now = new Date()
+//     const reservedUntil = reservation.reservedUntil
+//     if(reservedUntil<now) {
+//       if(!reservation.isBooked) {
+//         const vehicle = await Vehicle.findById(reservation.vehicle._id)
+//         vehicle.quantity = vehicle.quantity +1
+//        await Reservation.findByIdAndDelete(reservation._id)
+//       }
+//       else {
+//         return reservation
+//       }
+//     }
+//   })
+// }
 

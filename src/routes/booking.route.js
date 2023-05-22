@@ -1,6 +1,9 @@
 import { Router } from "express";
 import Booking from "../model/booking.model.js";
+import Reservation from  "../model/reservation.model.js";
+import Vehicle from  "../model/vehicle.model.js";
 import verifyToken from "../middleware/verifyToken.js";
+
 
 const router = Router();
 
@@ -8,11 +11,14 @@ const router = Router();
 // Route zum Abrufen aller Buchungen für den aktuellen Benutzer
 router.get("/", verifyToken, async (req, res) => {
   try {
-    if(req.tokenPayload.role.name !== "admin") {
-    const bookings = await Booking.find({ user: req.tokenPayload.userId });
+    const userId = req.tokenPayload.userId;
+
+    if(req.tokenPayload.role && req.tokenPayload.role.name === "admin") {
+      const bookings = await Booking.find().populate("vehicle");
+
     res.json(bookings);
     }else{
-      const bookings = await Booking.find();
+      const bookings = await Booking.find({ user: userId }).populate("vehicle");;
       res.json(bookings);
     }
   } catch (error) {
@@ -44,23 +50,33 @@ router.get("/", verifyToken, async (req, res) => {
 
 // Route zum Erstellen einer neuen Buchung
 router.post("/", verifyToken, async (req, res) => {
-  const { bookingId, vehicle, startDate, endDate, user, totalPrice } = req.body;
+  const { reservationId } = req.body;
 
+  const reservation = await Reservation.findById(reservationId)
   // Validierung der eingehenden Daten hinzufügen
 
+  if(!reservation._id) {
+    res.status(400).json({ message: "reservation not found"});
+  }
   const booking = new Booking({
-    bookingId,
-    vehicle,
-    startDate: new Date(startDate),
-    endDate: new Date(endDate),
+    vehicle: reservation.vehicle,
+    startDate:reservation.startDate,
+    endDate: reservation.endDate,
     user: req.tokenPayload.userId, // Benutzerdaten aus dem Token verwenden, falls nicht in req.body vorhanden
-    totalPrice,
+    totalPrice: reservation.totalPrice,
   });
-
+  const vehicleId = reservation.vehicle
   try {
     const newBooking = await booking.save();
+    if(newBooking._id) {
+     await Vehicle.updateQuantity(vehicleId, 1);
+      await  Reservation.findByIdAndDelete(
+        reservationId
+      );
+    }
     res.status(201).json(newBooking);
   } catch (error) {
+    console.log(error)
     res.status(400).json({ message: error.message });
   }
 });
@@ -108,15 +124,16 @@ router.put("/:id", verifyToken, async (req, res) => {
 // Route zum Stornieren einer Buchung
 router.delete("/:id", verifyToken, async (req, res) => {
   try {
+    console.log("delete", req.params.id)
     const deletedBooking = await Booking.findOneAndDelete({
-      _id: req.params.id,
-      user: req.tokenPayload.id,
+      _id: req.params.id
     });
 
     if (!deletedBooking) {
       res.status(404).json({ message: "Booking not found" });
     } else {
       res.json({ message: "Booking successfully deleted" });
+      await Vehicle.updateQuantity(deletedBooking.vehicle, -1);
     }
   } catch (error) {
     res.status(500).json({ message: error.message });

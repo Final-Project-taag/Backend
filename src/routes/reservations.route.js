@@ -2,7 +2,7 @@ import { Router } from "express";
 import Reservation from "../model/reservation.model.js";
 import Vehicle from "../model/vehicle.model.js";
 import verifyToken from "../middleware/verifyToken.js";
-import { calculatePrice } from "../backgroundtasks/ backgroundTasks.js";
+import { calculatePrice  } from "../backgroundtasks/ backgroundTasks.js";
 
 const reservationsRouter = Router();
 
@@ -25,17 +25,20 @@ const getActiveReservations = async () => {
   return reservations;
 };
 
+
 // Get all reservations
 reservationsRouter.get("/", verifyToken, async (req, res) => {
   try {
     const userId = req.tokenPayload.userId;
     if (req.tokenPayload.role && req.tokenPayload.role.name === "admin") {
       const reservations = await Reservation.find().populate("vehicle");
+      // reservations.map(reservation=> cleanUpReservations(reservation))
+      // console.log(reservations)
       res.json(reservations);
     } else {
-      const reservations = await Reservation.find({ user: userId }).populate(
-        "vehicle"
-      );
+      const reservations = await Reservation.find({ user: userId }).populate("vehicle");
+      // console.log(reservations)
+      // reservations.map(reservation=> cleanUpReservations(reservation))
       res.json(reservations);
     }
   } catch (error) {
@@ -47,6 +50,7 @@ reservationsRouter.get("/", verifyToken, async (req, res) => {
 
 reservationsRouter.post("/", verifyToken, async (req, res) => {
   const { vehicleId, startDate, endDate } = req.body;
+  console.log(vehicleId)
   const userId = req.tokenPayload.userId;
 
   // Set the reservation duration to 60 minutes (in milliseconds)
@@ -62,29 +66,20 @@ reservationsRouter.post("/", verifyToken, async (req, res) => {
     user: userId,
     startDate,
     endDate,
-    reserved: true,
     totalPrice: calculatePrice(startDate,endDate, vehicle.price)
   });
 
   try {
     const newReservation = await reservation.save();
-
     if (!newReservation) {
       return res
         .status(500)
         .json({ message: "Fehler beim Speichern der Reservierung." });
     }
 
-    const updateResult = await Vehicle.updateQuantity(vehicleId, 1);
-
-    if (!updateResult) {
-      return res
-        .status(500)
-        .json({ message: "Fehler beim Aktualisieren der Fahrzeugmenge." });
-    }
-
     res.status(201).json(newReservation);
   } catch (error) {
+    console.log(error)
     if (error.name === "ValidationError") {
       res
         .status(400)
