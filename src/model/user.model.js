@@ -140,3 +140,10 @@ export async function updateEmailHash(email, hash) {
 
     await user.save();
 }
+ // DB-Funktion zum Erstellen eines neuen Admin-Eintrags
+export async function insertNewAdmin(userBody) {
+    const role = await RoleModel.findByName(RoleModel.rolesEnum.admin);
+    userBody.role = role._id;
+    const newAdmin = new User(userBody);
+    return await newAdmin.save();
+}

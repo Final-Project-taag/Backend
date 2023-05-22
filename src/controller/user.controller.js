@@ -215,3 +215,21 @@ export async function refreshNewVerification(req, res) {
 export async function getAllUsers(req, res) {
     res.send(await UserModel.getAll());
 }
+
+export async function addNewAdmin (req, res) {
+  let body = req.body;
+
+  // TODO: Validierungen hier...
+
+  body.password = bcrypt.hashSync(body.password, 10);
+  try {
+    await UserModel.insertNewAdmin(body);
+    res.status(201).json({ success: true });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};

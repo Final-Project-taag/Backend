@@ -39,7 +39,7 @@ router.get("/", verifyToken, async (req, res) => {
 
 // Route zum Erstellen einer neuen Buchung
 router.post("/", verifyToken, async (req, res) => {
-  const { bookingId, vehicle, startDate, endDate, user, totalPrice } = req.body;
+  const { bookingId, vehicle, startDate, endDate, user, totalPrice , isBooked} = req.body;
 
   // Validierung der eingehenden Daten hinzufügen
 
@@ -50,6 +50,7 @@ router.post("/", verifyToken, async (req, res) => {
     endDate: new Date(endDate),
     user: req.tokenPayload.id, // Benutzerdaten aus dem Token verwenden, falls nicht in req.body vorhanden
     totalPrice,
+    isBooked: true
   });
 
   try {

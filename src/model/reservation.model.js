@@ -31,7 +31,10 @@ const reservationSchema = new mongoose.Schema({
   isBooked: {
     type: Boolean,
     default: false,
-  }
+  },
+  totalPrice: {
+    type: Number,
+  },
 
 });
 

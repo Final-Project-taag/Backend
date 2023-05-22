@@ -22,9 +22,25 @@ reservationsRouter.get("/active", verifyToken, async (req, res) => {
 
 // Definition von getActiveReservations
 const getActiveReservations = async () => {
-  const reservations = await Reservation.find({ reserved: true });
+  const now = new Date();
+  now.setHours(now.getHours() + 2); // Adjust for timezone difference
+  const reservations = await Reservation.find({ 
+    startDate: { $lte: now },
+    endDate: { $gte: now }
+  });
   return reservations;
 };
+const findReservationsWithinRange = async (startDate, endDate) => {
+  const reservations = await Reservation.find({
+    $or: [
+      { startDate: { $lte: endDate }, endDate: { $gte: startDate } }, // Reservations that overlap the start or the end
+      { startDate: { $gte: startDate }, endDate: { $lte: endDate } }, // Reservations that are within the start and end
+    ]
+  });
+  return reservations;
+};
+
+
 
 
 // Get all reservations
@@ -44,21 +60,27 @@ reservationsRouter.post("/", verifyToken, async (req, res) => {
   const { vehicleId } = req.body;
   const userId = req.tokenPayload.userId;
 
-  // Set the reservation duration to 60 minutes (in milliseconds)
+ // Check for active reservations
+/*  const activeReservations = await getActiveReservations();
+ if (activeReservations && activeReservations.length > 0) {
+   return res.status(400).json({ message: "Es gibt bereits eine aktive Reservierung." });
+ }
+ */  // Set the reservation duration to 60 minutes (in milliseconds)
   const reservationDuration = 60 * 60 * 1000;
 
-  // Calculate the reservedUntil date
-/*   const reservedUntil = new Date(Date.now() + reservationDuration);
- */  const endDate = new Date(Date.now() + reservationDuration);
+  // Get the current time and adjust for timezone difference
+  const startDate = new Date();
+  startDate.setHours(startDate.getHours() + 2);
+
+  // Calculate the endDate
+  const endDate = new Date(startDate.getTime() + reservationDuration);
 
   const reservation = new Reservation({
     vehicle: vehicleId,
     user: userId,
-    startDate: new Date(),
-    endDate,
+    startDate: startDate,
+    endDate: endDate,
     reserved: true,
-  /*   reservedUntil, */
-    
   });
 
   try {
@@ -109,8 +131,9 @@ reservationsRouter.get("/:id", verifyToken, async (req, res) => {
 
 
 // Update a reservation
+
 reservationsRouter.put("/:id", verifyToken, async (req, res) => {
-  const { startDate, endDate } = req.body;
+  const { startDate, endDate, totalPrice } = req.body;
 
   try {
     let reservation = await Reservation.findById(req.params.id).populate("vehicle");
@@ -119,6 +142,12 @@ reservationsRouter.put("/:id", verifyToken, async (req, res) => {
       return res
         .status(404)
         .json({ message: "Reservation not found with the given ID" });
+    }
+
+    // Check for conflicting reservations
+    const conflictingReservations = await findReservationsWithinRange(new Date(startDate), new Date(endDate));
+    if (conflictingReservations.length > 0) {
+      return res.status(400).json({ message: `Es gibt bereits eine Reservierung in diesem Zeitraum. ID der konflikthaften Reservierung: ${conflictingReservations[0]._id}` });
     }
 
     // Calculate the total price
@@ -131,7 +160,9 @@ reservationsRouter.put("/:id", verifyToken, async (req, res) => {
     reservation.startDate = startTime;
     reservation.endDate = endTime;
     reservation.totalPrice = totalPrice;
-
+    reservation.reserved = false;
+    reservation.isBooked = true;
+   
     const updatedReservation = await reservation.save();
 
     res.json(updatedReservation);
@@ -139,6 +170,10 @@ reservationsRouter.put("/:id", verifyToken, async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 });
+/* In dieser überarbeiteten Version der Funktion wird die findReservationsWithinRange-Funktion verwendet,
+ um nach Reservierungen zu suchen, die sich mit dem neuen Start- und Enddatum der zu aktualisierenden Reservierung überschneiden. Wenn konfliktierende Reservierungen gefunden werden, wird eine Fehlermeldung zurückgegeben, die die ID der ersten gefundenen konfliktierenden Reservierung enthält. */
+
+
 
 // Delete a reservation
 reservationsRouter.delete("/:id", verifyToken, async (req, res) => {

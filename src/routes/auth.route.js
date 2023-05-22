@@ -1,11 +1,6 @@
 
 import { Router } from "express";
-import loadUser, {
-  registerNewUser,
-  login,
-  verifyEmail,
-  refreshNewVerification,
-} from "../controller/user.controller.js";
+import loadUser, {registerNewUser,login, verifyEmail, refreshNewVerification, addNewAdmin} from "../controller/user.controller.js";
 import verifyToken from "../middleware/verifyToken.js";
 
 // Erstelle neue Router Instanz
@@ -27,4 +22,6 @@ authRouter.route("/verify")
 authRouter.route("/auth")
     .get(verifyToken, loadUser);
 
+authRouter.route('/register-admin')
+    .post (verifyToken)
 export default authRouter;

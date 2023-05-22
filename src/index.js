@@ -61,14 +61,7 @@ app.use('/payment/payment-update', paymentSuccessRouter);
 app.use('/payment/webhook', paymentWebhookRouter);
 
 //die Fahrzeugtypen und die verfügbare Menge jedes Fahrzeugs zurückzugeben:
-app.get('/api/vehicleCounts', async (req, res) => {
-  const vehicleCounts = await showAvailableVehicleCounts();
-  const vehicleCountsMap = vehicleCounts.reduce((acc, count) => {
-    acc[count._id] = count.count;
-    return acc;
-  }, {});
-  res.json(vehicleCountsMap);
-}); 
+
 
 // Einmalig Verbindung ueber default Connection aufbauen
 // Uebergebe Seeding-Funktion zum Einfuegen von Userrollen

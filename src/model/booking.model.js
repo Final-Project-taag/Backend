@@ -16,7 +16,7 @@ const bookingSchema = new Schema({
   // das Datum, an dem die Buchung endet
   isBooked: {
     type: Boolean,
-    default: false,
+    
   },
   bookingId: {
     type: mongoose.Schema.Types.ObjectId,

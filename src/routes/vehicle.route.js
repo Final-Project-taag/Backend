@@ -48,8 +48,8 @@ vehicleRouter.get("/:vehicleId", async (req, res) => {
 
 
 // Route zum Hinzufügen eines Fahrzeugs
-vehicleRouter.post('/', verifyToken, isAdmin, async (req, res) => {
-  const { type, name, driveRange, weight, price, chargingTime,  reserved , reservedUntil } = req.body;
+vehicleRouter.post('/', verifyToken, async (req, res) => {
+  const { type, name, driveRange, weight, price, chargingTime, quantity, reserved , reservedUntil, imageUrls } = req.body;
 
   const vehicle = new Vehicle({
     type,
@@ -58,10 +58,12 @@ vehicleRouter.post('/', verifyToken, isAdmin, async (req, res) => {
     weight,
     price,
     chargingTime,
+    quantity,
     reserved , 
-    reservedUntil
+    reservedUntil,
+    imageUrls
   });
-
+console.log(req.body)
   try {
     const newVehicle = await vehicle.save();
     res.status(201).json(newVehicle);
