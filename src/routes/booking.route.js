@@ -14,8 +14,7 @@ router.get("/", verifyToken, async (req, res) => {
     const userId = req.tokenPayload.userId;
 
     if(req.tokenPayload.role && req.tokenPayload.role.name === "admin") {
-      const bookings = await Booking.find().populate("vehicle");
-
+      const bookings = await Booking.find().populate("vehicle").populate("user");
     res.json(bookings);
     }else{
       const bookings = await Booking.find({ user: userId }).populate("vehicle");;
@@ -124,7 +123,6 @@ router.put("/:id", verifyToken, async (req, res) => {
 // Route zum Stornieren einer Buchung
 router.delete("/:id", verifyToken, async (req, res) => {
   try {
-    console.log("delete", req.params.id)
     const deletedBooking = await Booking.findOneAndDelete({
       _id: req.params.id
     });

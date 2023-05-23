@@ -59,20 +59,5 @@ cron.schedule('0 0 * * *', async () => {
   }
 });
 
-// export const cleanUpReservations = async (reservations)=>{
-//   return reservations.map(async reservation => {
-//     const now = new Date()
-//     const reservedUntil = reservation.reservedUntil
-//     if(reservedUntil<now) {
-//       if(!reservation.isBooked) {
-//         const vehicle = await Vehicle.findById(reservation.vehicle._id)
-//         vehicle.quantity = vehicle.quantity +1
-//        await Reservation.findByIdAndDelete(reservation._id)
-//       }
-//       else {
-//         return reservation
-//       }
-//     }
-//   })
-// }
+
 

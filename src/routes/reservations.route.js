@@ -7,23 +7,23 @@ import { calculatePrice  } from "../backgroundtasks/ backgroundTasks.js";
 const reservationsRouter = Router();
 
 // ---------------------------------Get active reservations-------------------------------//
-reservationsRouter.get("/active", verifyToken, async (req, res) => {
-  try {
-    const activeReservations = await getActiveReservations();
-    if (!activeReservations || activeReservations.length === 0) {
-      throw new Error("Keine aktive Reservierung gefunden");
-    }
-    const bookingId = activeReservations[0]._id;
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
+// reservationsRouter.get("/active", verifyToken, async (req, res) => {
+//   try {
+//     const activeReservations = await getActiveReservations();
+//     if (!activeReservations || activeReservations.length === 0) {
+//       throw new Error("Keine aktive Reservierung gefunden");
+//     }
+//     const bookingId = activeReservations[0]._id;
+//   } catch (error) {
+//     res.status(500).json({ message: error.message });
+//   }
+// });
 
 // Definition von getActiveReservations
-const getActiveReservations = async () => {
-  const reservations = await Reservation.find({ reserved: true });
-  return reservations;
-};
+// const getActiveReservations = async () => {
+//   const reservations = await Reservation.find({ reserved: true });
+//   return reservations;
+// };
 
 
 // Get all reservations
@@ -31,14 +31,10 @@ reservationsRouter.get("/", verifyToken, async (req, res) => {
   try {
     const userId = req.tokenPayload.userId;
     if (req.tokenPayload.role && req.tokenPayload.role.name === "admin") {
-      const reservations = await Reservation.find().populate("vehicle");
-      // reservations.map(reservation=> cleanUpReservations(reservation))
-      // console.log(reservations)
+      const reservations = await Reservation.find().populate("vehicle").populate("user")
       res.json(reservations);
     } else {
       const reservations = await Reservation.find({ user: userId }).populate("vehicle");
-      // console.log(reservations)
-      // reservations.map(reservation=> cleanUpReservations(reservation))
       res.json(reservations);
     }
   } catch (error) {
@@ -151,27 +147,6 @@ reservationsRouter.put("/:id", verifyToken, async (req, res) => {
   }
 });
 
-// reservationsRouter.put("/book/:id", verifyToken, async (req, res) => {
-//   console.log("HOHOOOOOOO");
-//   try {
-//     let reservation = await Reservation.findById(req.params.id).populate(
-//       "user"
-//     );
-//     console.log({ reservation });
-//     if (!reservation) {
-//       return res
-//         .status(404)
-//         .json({ message: "Reservation not found with the given ID" });
-//     }
-//     // Update isBooked
-//     reservation.isBooked = true;
-//     //save booking
-//     const updatedReservation = await reservation.save();
-//     res.json(updatedReservation);
-//   } catch (error) {
-//     res.status(400).json({ message: error.message });
-//   }
-// });
 
 // Delete a reservation
 reservationsRouter.delete("/:id", verifyToken, async (req, res) => {
