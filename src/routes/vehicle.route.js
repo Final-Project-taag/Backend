@@ -72,10 +72,6 @@ console.log(req.body)
   }
 });
 
-// Jetzt haben Sie eine API-Route /vehicles (mit der HTTP-Methode POST), die ein neues Fahrzeug (Auto) in Ihrer Datenbank speichert.
-
-//In Ihrer Frontend-Anwendung können Sie nun ein Formular erstellen, um die Fahrzeugdaten einzugeben und diese Route aufrufen, um das Fahrzeug zur Datenbank hinzuzufügen.
-
 // Route zum Updaten
 vehicleRouter.put("/:id", verifyToken, isAdmin, async (req, res) => {
   const { type, name, driveRange, weight, price, chargingTime, reserved , reservedUntil } = req.body;

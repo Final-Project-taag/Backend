@@ -2,6 +2,7 @@ import Reservation from "../model/reservation.model.js";
 
 //-------------------------------UPDATERESERVATION FÜR ZAHLUNG---------------------------------------------//
 
+
 // Diese Funktion aktualisiert eine Reservierung in der Datenbank basierend auf der übergebenen reservationId und den neuen Daten
 export const updateReservation = async (reservationId, newData) => {
     try {

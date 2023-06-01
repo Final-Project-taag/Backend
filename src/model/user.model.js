@@ -61,11 +61,16 @@ const userSchema = mongoose.Schema({
 // Erstelle ein neues Model Objekt fuer User
 // Erstellt automatisch users Collection in der MongoDB, wenn noch nicht vorhanden
 const User = mongoose.model('User', userSchema);
-
 // DB-Funktion zum Abrufen eines bestimmten User-Eintrags per username
 export async function findUserByUsername(username) {
     return await User.findOne({ username: username }).populate('role');
 }
+
+// DB-Funktion zum Abrufen eines bestimmten User-Eintrags per username
+export async function findUserById(id) {
+    return await User.findOne({ id }).populate('role');
+}
+
 
 // DB-Funktion zum Erstellen eines neuen User-Eintrags
 export async function insertNewUser(userBody) {

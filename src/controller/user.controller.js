@@ -16,7 +16,6 @@ function isValidEmail(email) {
 export async function registerNewUser(req, res) {
   try {
     let body = req.body;
-    console.log(body.password);
     // Überprüfe, ob das Passwort mindestens 8 Zeichen lang ist
     if (body.password.length < 8) {
       res.status(400).json({

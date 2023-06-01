@@ -11,9 +11,7 @@ export const addVehicles = async (vehicleData, count) => {
     for (let i = 0; i < count; i++) {
       const newVehicle = new Vehicle(vehicleData);
       await newVehicle.save();
-      console.log(`Fahrzeug #${i + 1} hinzugefügt:`, newVehicle);
     }
-    console.log(`${count} Fahrzeuge erfolgreich hinzugefügt!`);
   } catch (err) {
     console.error('Fehler beim Hinzufügen von Fahrzeugen:', err);
   }
@@ -56,7 +54,6 @@ export const showAvailableVehicleCounts = async () => {
         },
       },
     ]);
-    console.log("Fahrzeuganzahlen:", vehicleCounts); // Debugging-Information hinzufügen
     return vehicleCounts;
   } catch (err) {
     console.error('Fehler beim Abrufen der verfügbaren Fahrzeugmengen:', err);

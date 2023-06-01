@@ -11,7 +11,7 @@ export async function sendVerificationMail(recipient, mailHash) {
     // Erstelle Mail mit Link zur Verifikationsroute
     const msg = {
         to: recipient,
-        from: 'tenaw.worku@dci.education', // Use the email address or domain you verified above
+        from: 'engie4379@gmail.com', // Use the email address or domain you verified above
         subject: 'E-Mail verification for CarWheels-API',
         html: `Please verify your e-mail by following <a href="http://localhost:5173/verify?t=${mailHash}" target="_blank" >CLICK THIS</a> link.`,
     };
